@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.13 2001/01/15 08:31:30 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.14 2001/01/19 23:17:46 jlawson Exp $";
 #endif
 
 
@@ -99,6 +99,12 @@ LRESULT CALLBACK Main_WindowProc(
       EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND | dwEnabledWithLogAndData);
+
+      // Enable the "full zoom" menu item only when there is data and zoomed in.
+      time_t zoomleft, zoomright;
+      graphwin.GetRange(zoomleft, zoomright);
+      DWORD dwEnabledWithPartialZoom = (zoomleft != (time_t) -1 || zoomright != (time_t) -1) ? MF_ENABLED : MF_GRAYED;
+      EnableMenuItem(hPopup, IDM_ZOOMFULL, MF_BYCOMMAND | dwEnabledWithLogAndData | dwEnabledWithPartialZoom);
 
       // Check or uncheck the drop menu item.
       CheckMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND |
@@ -210,6 +216,14 @@ LRESULT CALLBACK Main_WindowProc(
         else if (wID == IDM_SHOWIDLE)
         {
           bShowIdleDrops = !bShowIdleDrops;
+
+          // force a redraw
+          InvalidateRect(hwnd, NULL, TRUE);
+        }
+        else if (wID == IDM_ZOOMFULL)
+        {
+          // set zoom window to actual beginning and end of logfile.
+          graphwin.SetRange((time_t) -1, (time_t) -1);
 
           // force a redraw
           InvalidateRect(hwnd, NULL, TRUE);
