@@ -1,0 +1,50 @@
+
+  distributed.net's Logfile Visualizer documentation ver 1.0.0
+ 
+  Copyright distributed.net 1997-1999 - All Rights Reserved
+  For use in distributed.net projects only.
+  Any other distribution violates copyright.
+
+ Index ---------------------------------------------------------------
+
+    1.0  Introduction
+    2.0  Opening a log file
+    3.0  Logfile Visualizer Configuration
+
+ 1.0  Introduction ---------------------------------------------------
+
+    This distributed.net program will generate a graph view of your
+    distributed.net client's log file.  Start and End dates are
+    adjustable.
+
+ 2.0  Opening a log file ---------------------------------------------
+
+    For this program to work, your distributed.net Rc5des client needs
+    to be setup to generate a log file.  Please refer to the documentation
+    that came with your client to find out how to turn this configuration
+    on.
+
+    To open a log file pull down the File menu and select Open log file.
+    If your log file has a .log extension, browse to the file and open it.
+    If your log file has another, or no extension you will need to select
+    "All Files (*.*)" from the Files of Type pull down menu.
+
+ 3.0  Logfile Visualizer Configuration -------------------------------
+
+    To adjust the days that will be displayed:
+
+    1   Right click anywhere in the open window.  This will display the
+        Logfile Visualizer Configuration.
+
+    2   Put your mouse over the left or right edge of the large bar at
+        the top.  Your mouse will turn into a left/right arrow which you
+        can click and drag to the left or right.  This will adjust the
+        Start and End date viewed in the Logfile Visualizer. (Start and
+        End dates are listed below and to the right of this bar.)
+
+    3   To reset these dates, use the pull down menu for Starting date
+        or Ending date and select the corresponding option, either Start
+        of logfile or End of logfile.
+
+ ---------------------------------------------------------------------
+ 
