@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.16 2004/07/04 07:39:47 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.17 2004/07/04 08:38:00 jlawson Exp $";
 #endif
 
 
@@ -113,7 +113,7 @@ LRESULT CALLBACK Main_WindowProc(
                     (bShowIdleDrops ? MF_CHECKED : MF_UNCHECKED));
       // Set the radio button on whichever contest is currently selected.
       UINT radioselect = graphwin.GetViewedContestMenuId();
-      CheckMenuRadioItem(hPopup, IDM_CONTEST_RC5, IDM_CONTEST_RC5_72,
+      CheckMenuRadioItem(hPopup, IDM_CONTEST_RC5, IDM_CONTEST_OGR_P2,
                          radioselect, MF_BYCOMMAND);
       return FALSE;
     }
