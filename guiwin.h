@@ -98,15 +98,15 @@ public:
     nologloaded, lognotfound, loadinprogress, logloaded, loginvalid
   };
 
-  enum contest_t {
-    CONTEST_UNKNOWN, 
-    CONTEST_RC5, 
-    CONTEST_RC5_72, 
-    CONTEST_DES, 
-    CONTEST_CSC, 
-    CONTEST_OGR,
-    CONTEST_OGR_P2,
-    CONTEST_NEXTUNUSED    // this entry must be last.
+  enum project_t {
+    PROJECT_UNKNOWN, 
+    PROJECT_RC5, 
+    PROJECT_RC5_72, 
+    PROJECT_DES, 
+    PROJECT_CSC, 
+    PROJECT_OGR,
+    PROJECT_OGR_P2,
+    PROJECT_NEXTUNUSED    // this entry must be last.
   };
 
 protected:
@@ -123,11 +123,11 @@ protected:
   time_t mintime, maxtime;
   double minrate, maxrate;
   double totalkeys;
-  bool haveprojectdata[CONTEST_NEXTUNUSED];
+  bool haveprojectdata[PROJECT_NEXTUNUSED];
 
   // user configurable options.
   time_t rangestart, rangeend;
-  contest_t viewedcontest;
+  project_t viewedproject;
 
   // current application state.
   HANDLE hLogThread;
@@ -166,7 +166,7 @@ public:
   bool IsDataAvailable(void) const
     { return loggerstate == logloaded && !logdata.empty() &&
           minrate != maxrate && mintime != maxtime; }
-  bool IsDataAvailable(contest_t project) const
+  bool IsDataAvailable(project_t project) const
     { return (loggerstate == logloaded || loggerstate == loginvalid) && haveprojectdata[project]; }
 
   // public interface methods.
@@ -184,8 +184,8 @@ public:
   int ExportCSV(const char *outputfile);
 
   // public interface methods.
-  UINT GetViewedContestMenuId(void) const;
-  bool SetViewedContestByMenuId(UINT menuid);
+  UINT GetViewedProjectMenuId(void) const;
+  bool SetViewedProjectByMenuId(UINT menuid);
 
 };
 

@@ -93,11 +93,11 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Emphasize &Idle periods",     IDM_SHOWIDLE
         MENUITEM SEPARATOR
-        MENUITEM "RC5-&64 Project data",        IDM_CONTEST_RC5
-        MENUITEM "RC5-&72 Project data",        IDM_CONTEST_RC5_72
-        MENUITEM "&DES Project data",           IDM_CONTEST_DES
-        MENUITEM "&CSC Project data",           IDM_CONTEST_CSC
-        MENUITEM "&OGR Project data",           IDM_CONTEST_OGR
+        MENUITEM "RC5-&64 Project data",        IDM_PROJECT_RC5
+        MENUITEM "RC5-&72 Project data",        IDM_PROJECT_RC5_72
+        MENUITEM "&DES Project data",           IDM_PROJECT_DES
+        MENUITEM "&CSC Project data",           IDM_PROJECT_CSC
+        MENUITEM "&OGR Project data",           IDM_PROJECT_OGR
         MENUITEM "OGR-P&2 Project data",        110
     END
     POPUP "&Help"

@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.19 2004/07/04 20:50:58 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.20 2004/07/04 20:58:28 jlawson Exp $";
 #endif
 
 
@@ -95,12 +95,12 @@ LRESULT CALLBACK Main_WindowProc(
       DWORD dwEnabledWithLog = (graphwin.GetStatusValue() != MyGraphWindow::nologloaded ? MF_ENABLED : MF_GRAYED);
       EnableMenuItem(hPopup, IDM_REFRESHLOGFILE, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_GRAPHCONFIG, MF_BYCOMMAND | dwEnabledWithLogAndData);
-      EnableMenuItem(hPopup, IDM_CONTEST_RC5, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_RC5) ? MF_ENABLED : MF_GRAYED));
-      EnableMenuItem(hPopup, IDM_CONTEST_RC5_72, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_RC5_72) ? MF_ENABLED : MF_GRAYED));
-      EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_DES) ? MF_ENABLED : MF_GRAYED));
-      EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_CSC) ? MF_ENABLED : MF_GRAYED));
-      EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_OGR) ? MF_ENABLED : MF_GRAYED));
-      EnableMenuItem(hPopup, IDM_CONTEST_OGR_P2, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_OGR_P2) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_PROJECT_RC5, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::PROJECT_RC5) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_PROJECT_RC5_72, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::PROJECT_RC5_72) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_PROJECT_DES, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::PROJECT_DES) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_PROJECT_CSC, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::PROJECT_CSC) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_PROJECT_OGR, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::PROJECT_OGR) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_PROJECT_OGR_P2, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::PROJECT_OGR_P2) ? MF_ENABLED : MF_GRAYED));
       EnableMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND | dwEnabledWithLogAndData);
       EnableMenuItem(hPopup, IDM_EXPORT_CSV, MF_BYCOMMAND | dwEnabledWithLogAndData);
 
@@ -113,9 +113,9 @@ LRESULT CALLBACK Main_WindowProc(
       // Check or uncheck the drop menu item.
       CheckMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND |
                     (bShowIdleDrops ? MF_CHECKED : MF_UNCHECKED));
-      // Set the radio button on whichever contest is currently selected.
-      UINT radioselect = graphwin.GetViewedContestMenuId();
-      CheckMenuRadioItem(hPopup, IDM_CONTEST_RC5, IDM_CONTEST_OGR_P2,
+      // Set the radio button on whichever project is currently selected.
+      UINT radioselect = graphwin.GetViewedProjectMenuId();
+      CheckMenuRadioItem(hPopup, IDM_PROJECT_RC5, IDM_PROJECT_OGR_P2,
                          radioselect, MF_BYCOMMAND);
       return FALSE;
     }
@@ -210,14 +210,14 @@ LRESULT CALLBACK Main_WindowProc(
           }
           return FALSE;
         }
-        else if (wID == IDM_CONTEST_RC5 ||
-                 wID == IDM_CONTEST_RC5_72 ||
-                 wID == IDM_CONTEST_DES ||
-                 wID == IDM_CONTEST_CSC ||
-                 wID == IDM_CONTEST_OGR ||
-                 wID == IDM_CONTEST_OGR_P2)
+        else if (wID == IDM_PROJECT_RC5 ||
+                 wID == IDM_PROJECT_RC5_72 ||
+                 wID == IDM_PROJECT_DES ||
+                 wID == IDM_PROJECT_CSC ||
+                 wID == IDM_PROJECT_OGR ||
+                 wID == IDM_PROJECT_OGR_P2)
         {
-          if (graphwin.SetViewedContestByMenuId(wID)) {
+          if (graphwin.SetViewedProjectByMenuId(wID)) {
             // now trigger a reload from the log file.
             graphwin.LogRereadNeeded(hwnd);
           }

@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.17 2004/07/04 20:50:58 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.18 2004/07/04 20:58:28 jlawson Exp $";
 #endif
 
 
@@ -18,7 +18,7 @@ MyGraphWindow::MyGraphWindow(void) : hLogThread(NULL)
   // set the default ranges
   rangestart = (time_t) -1;
   rangeend = (time_t) -1;
-  viewedcontest = CONTEST_RC5_72;
+  viewedproject = PROJECT_RC5_72;
 
   // set the flags
   loggerstate = nologloaded;
@@ -112,16 +112,16 @@ static double __ParseDuration(const char *stamp)
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-static MyGraphWindow::contest_t __ParseContest(const char *stamp)
+static MyGraphWindow::project_t __ParseProject(const char *stamp)
 {
   //MessageBox(NULL, stamp, NULL, MB_OK | MB_ICONERROR);
-  if (strncmp(stamp, "RC5-72", 6) == 0) return MyGraphWindow::CONTEST_RC5_72;
-  else if (strncmp(stamp, "RC5", 3) == 0) return MyGraphWindow::CONTEST_RC5;
-  else if (strncmp(stamp, "DES", 3) == 0) return MyGraphWindow::CONTEST_DES;
-  else if (strncmp(stamp, "CSC", 3) == 0) return MyGraphWindow::CONTEST_CSC;
-  else if (strncmp(stamp, "OGR-P2", 6) == 0) return MyGraphWindow::CONTEST_OGR_P2;
-  else if (strncmp(stamp, "OGR", 3) == 0) return MyGraphWindow::CONTEST_OGR;
-  else return MyGraphWindow::CONTEST_UNKNOWN;
+  if (strncmp(stamp, "RC5-72", 6) == 0) return MyGraphWindow::PROJECT_RC5_72;
+  else if (strncmp(stamp, "RC5", 3) == 0) return MyGraphWindow::PROJECT_RC5;
+  else if (strncmp(stamp, "DES", 3) == 0) return MyGraphWindow::PROJECT_DES;
+  else if (strncmp(stamp, "CSC", 3) == 0) return MyGraphWindow::PROJECT_CSC;
+  else if (strncmp(stamp, "OGR-P2", 6) == 0) return MyGraphWindow::PROJECT_OGR_P2;
+  else if (strncmp(stamp, "OGR", 3) == 0) return MyGraphWindow::PROJECT_OGR;
+  else return MyGraphWindow::PROJECT_UNKNOWN;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ void MyGraphWindow::ReadLogData(void)
   mintime = maxtime = 0;
   minrate = maxrate = 0;
   totalkeys = 0;
-  for (int ii = 0; ii < CONTEST_NEXTUNUSED; ii++) {
+  for (int ii = 0; ii < PROJECT_NEXTUNUSED; ii++) {
     haveprojectdata[ii] = false;
   }
 
@@ -199,7 +199,7 @@ void MyGraphWindow::ReadLogData(void)
         if (completedptr != NULL)
         {
           MyGraphEntry ge;
-          contest_t gecontest = CONTEST_UNKNOWN;
+          project_t geproject = PROJECT_UNKNOWN;
           bool bKeycountOrStatUnits;    // true=keycount, false=statunits.
 
           // parse timestamp from first line.
@@ -226,27 +226,27 @@ void MyGraphWindow::ReadLogData(void)
             bKeycountOrStatUnits = false;       // stat units.
             for (char *constart = completedptr - 3; ; constart--) {
               if (constart < linebuffer || *constart == ' ') {
-                gecontest = __ParseContest(constart + 1);
+                geproject = __ParseProject(constart + 1);
                 break;
               }
             }
           } else if (compprech == ']') {
             // very old format.
             bKeycountOrStatUnits = true;        // keycount.
-            gecontest = __ParseContest(completedptr + 10);
-            if (gecontest == CONTEST_UNKNOWN) {
+            geproject = __ParseProject(completedptr + 10);
+            if (geproject == PROJECT_UNKNOWN) {
               if (strncmp(completedptr + 10, "block", 5) == 0) {
-                // some very old clients did not indicate contest ("Completed block")
-                gecontest = CONTEST_RC5;
+                // some very old clients did not indicate project ("Completed block")
+                geproject = PROJECT_RC5;
               } else if (strncmp(completedptr + 10, "one", 3) == 0) {
                 // some old RC5DES clients indicated "Completed one xxx block".
-                gecontest = __ParseContest(completedptr + 14);
+                geproject = __ParseProject(completedptr + 14);
               }
             }
           }
-          haveprojectdata[gecontest] = true;
-          if (gecontest == CONTEST_UNKNOWN || gecontest != viewedcontest) {
-            // ignore blocks for contests that are not currently being viewed.
+          haveprojectdata[geproject] = true;
+          if (geproject == PROJECT_UNKNOWN || geproject != viewedproject) {
+            // ignore blocks for projects that are not currently being viewed.
             continue;
           }
 
@@ -437,8 +437,8 @@ const char *MyGraphWindow::GetStatusString(void)
     return "You must specify a log file to be used for graph visualization.";
   case loginvalid:
     {
-      for (int ii = 1; ii < CONTEST_NEXTUNUSED; ii++) {
-        if (ii != viewedcontest && haveprojectdata[ii]) 
+      for (int ii = 1; ii < PROJECT_NEXTUNUSED; ii++) {
+        if (ii != viewedproject && haveprojectdata[ii]) 
           return "Could not load any data for graphing.  Pick another project to view.";
       }
       return "Could not load any data for graphing.  This may "
@@ -785,7 +785,7 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 
   // display the rotated y-axis label
   paintstr.DisplayYAxisLabelDescription(
-            (viewedcontest == CONTEST_OGR || viewedcontest == CONTEST_OGR_P2 ?
+            (viewedproject == PROJECT_OGR || viewedproject == PROJECT_OGR_P2 ?
                   "Work Unit noderate (nodes/sec)" :
                   "Work Unit keyrate (kkeys/sec)"), clientrect);
 
@@ -835,28 +835,28 @@ int MyGraphWindow::ExportCSV(const char *outputfile)
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-UINT MyGraphWindow::GetViewedContestMenuId(void) const
+UINT MyGraphWindow::GetViewedProjectMenuId(void) const
 {
-  switch (viewedcontest) {
-    case CONTEST_RC5: return IDM_CONTEST_RC5;
-    case CONTEST_RC5_72: return IDM_CONTEST_RC5_72;
-    case CONTEST_DES: return IDM_CONTEST_DES;
-    case CONTEST_CSC: return IDM_CONTEST_CSC;
-    case CONTEST_OGR: return IDM_CONTEST_OGR;
-    case CONTEST_OGR_P2: return IDM_CONTEST_OGR_P2;
+  switch (viewedproject) {
+    case PROJECT_RC5: return IDM_PROJECT_RC5;
+    case PROJECT_RC5_72: return IDM_PROJECT_RC5_72;
+    case PROJECT_DES: return IDM_PROJECT_DES;
+    case PROJECT_CSC: return IDM_PROJECT_CSC;
+    case PROJECT_OGR: return IDM_PROJECT_OGR;
+    case PROJECT_OGR_P2: return IDM_PROJECT_OGR_P2;
   }
   return 0;
 }
 
-bool MyGraphWindow::SetViewedContestByMenuId(UINT menuid)
+bool MyGraphWindow::SetViewedProjectByMenuId(UINT menuid)
 {
   switch (menuid) {
-    case IDM_CONTEST_RC5: viewedcontest = CONTEST_RC5; return true;
-    case IDM_CONTEST_RC5_72: viewedcontest = CONTEST_RC5_72; return true;
-    case IDM_CONTEST_DES: viewedcontest = CONTEST_DES; return true;
-    case IDM_CONTEST_CSC: viewedcontest = CONTEST_CSC; return true;
-    case IDM_CONTEST_OGR: viewedcontest = CONTEST_OGR; return true;
-    case IDM_CONTEST_OGR_P2: viewedcontest = CONTEST_OGR_P2; return true;
+    case IDM_PROJECT_RC5: viewedproject = PROJECT_RC5; return true;
+    case IDM_PROJECT_RC5_72: viewedproject = PROJECT_RC5_72; return true;
+    case IDM_PROJECT_DES: viewedproject = PROJECT_DES; return true;
+    case IDM_PROJECT_CSC: viewedproject = PROJECT_CSC; return true;
+    case IDM_PROJECT_OGR: viewedproject = PROJECT_OGR; return true;
+    case IDM_PROJECT_OGR_P2: viewedproject = PROJECT_OGR_P2; return true;
   }
   return false;
 }
