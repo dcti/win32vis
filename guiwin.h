@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <sys/stat.h>
 
 // Standard Template Library headers.
 #include <queue>

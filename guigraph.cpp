@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.14 2004/07/04 11:46:15 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.15 2004/07/04 13:04:11 jlawson Exp $";
 #endif
 
 
@@ -317,6 +317,28 @@ void MyGraphWindow::ReadLogData(void)
 
     // close the log
     fclose(fp);
+
+
+    // try to use the last-modified timestamp of the log file to adjust
+    // the years of all of the collected data points.
+    struct stat st;
+    if (stat(LogGetCurrentLogFilename(), &st) == 0) {
+      // add 5 days of padding to allow for people with misadjusted clocks.
+      if (lasttimestamp < st.st_mtime - (365*24*60*60) + (5*24*60*60)) {
+        int delta = st.st_mtime - lasttimestamp + (5*24*60*60);
+        delta -= (delta % (365*24*60*60));    // only adjust by a whole number of years.
+
+        // adjust the data points and the time window.
+        for (LogDataStorage_t::iterator pointiter = logdata.begin();
+            pointiter != logdata.end(); pointiter++) {
+          pointiter->timestamp += delta;
+        }
+        mintime += delta;
+        maxtime += delta;
+      }
+    }
+
+
     loggerstate = logloaded;
     bStateChanged = true;
   }
