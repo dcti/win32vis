@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiconfig.cpp,v 1.6 2004/07/04 07:38:52 jlawson Exp $";
+static char *id="@(#)$Id: guiconfig.cpp,v 1.7 2004/07/04 13:02:16 jlawson Exp $";
 #endif
 
 
@@ -37,6 +37,7 @@ static EventType graphevents [] = {
   {"Start of OGR-25", 965102400L},	// Tue Aug  1 00:00:00 EDT 2000
   {"End of RC5-64", 1026619200L},	// Sun Jul 14 00:00:00 EDT 2002
   {"Start of RC5-72", 1038891600L},	// Tue Dec  3 00:00:00 EST 2002
+  {"Start of OGR-P2", 1084665600L},  // 16-May-2004 00:00:00 UTC
   {NULL, 0} };
 
 
