@@ -1,11 +1,11 @@
-// Copyright distributed.net 1997-2001 - All Rights Reserved
+// Copyright distributed.net 1997-2004 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.8 2001/01/15 08:31:11 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.9 2004/07/04 07:40:34 jlawson Exp $";
 #endif
 
 
