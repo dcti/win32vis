@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.9 1999/12/30 19:16:03 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.10 1999/12/31 23:32:46 jlawson Exp $";
 #endif
 
 
@@ -256,7 +256,7 @@ void Main_CmAbout(HWND hwnd)
       PROG_DESC_LONG ", " PROG_VERSION_STR "\n"
       "Distributed Computing Technologies, Inc.\n"
       "http://www.distributed.net/\n\n"
-      "Programmed by Jeff \"Bovine\" Lawson <bovine@distributed.net>\n
+      "Programmed by Jeff \"Bovine\" Lawson <bovine@distributed.net>\n"
       "Other work by Yang You <yang_you@yahoo.com>\n\n"
       "Please send questions about this program to <help@distributed.net>";
 
