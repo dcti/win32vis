@@ -29,6 +29,7 @@
 
 // Windows headers.
 #define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT 0x0400
 #include <windows.h>
 #include <commctrl.h>
 #include <commdlg.h>
@@ -128,6 +129,7 @@ protected:
   HANDLE hLogThread;
   LoggerState loggerstate;
   bool bStateChanged;
+  CRITICAL_SECTION loggerbusy;
 
   // log parsing
   static long LogParseThread(long lParam);

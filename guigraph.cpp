@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.12 2004/07/04 07:42:23 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.13 2004/07/04 08:38:51 jlawson Exp $";
 #endif
 
 
@@ -23,6 +23,7 @@ MyGraphWindow::MyGraphWindow(void) : hLogThread(NULL)
   // set the flags
   loggerstate = nologloaded;
   bStateChanged = true;
+  InitializeCriticalSection(&loggerbusy);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -37,6 +38,7 @@ MyGraphWindow::~MyGraphWindow(void)
     WaitForSingleObject(hLogThread, INFINITE);
     CloseHandle(hLogThread);
   }
+  DeleteCriticalSection(&loggerbusy);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -162,6 +164,8 @@ static MyGraphWindow::contest_t __ParseContest(const char *stamp)
 
 void MyGraphWindow::ReadLogData(void)
 {
+  EnterCriticalSection(&loggerbusy);
+
   // reset storage.
   logdata.erase(logdata.begin(), logdata.end());
   mintime = maxtime = 0;
@@ -304,6 +308,8 @@ void MyGraphWindow::ReadLogData(void)
     loggerstate = lognotfound;
     bStateChanged = true;
   }
+
+  LeaveCriticalSection(&loggerbusy);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -368,30 +374,23 @@ void MyGraphWindow::LogRereadNeeded(HWND hwnd)
 const char *MyGraphWindow::GetStatusString(void)
 {
   bStateChanged = false;
-  if (loggerstate == loadinprogress)
-  {
+  switch (loggerstate) {
+  case loadinprogress:
     return "Please wait, currently reloading log file...";
-  }
-  else if (loggerstate == lognotfound)
-  {
+  case lognotfound:
     return "Could not load any data for graphing.  This may "
         "indicate that there was a problem opening the log file.";
-  }
-  else if (loggerstate == nologloaded)
-  {
+  case nologloaded:
     return "You must specify a log file to be used for graph visualization.";
-  }
-  else if (loggerstate == loginvalid)
-  {
+  case loginvalid:
     return "Could not load any data for graphing.  This may "
         "indicate that there was no graphable data inside of the "
         "specified log file.";
-  }
-  else if (loggerstate == logloaded)
-  {
+  case logloaded:
     return "Log file successfully loaded.";
+  default:
+    return "Unknown state.";
   }
-  return "Unknown state.";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -503,6 +502,8 @@ void MyPaintHelper::PaintGridLines(HPEN hpen)
 
 void MyPaintHelper::DrawToDataPoint(const MyGraphEntry &datapoint)
 {
+  if (!&datapoint) return;
+
   if ((datapoint.timestamp >= mintime) &&
       (datapoint.timestamp <= maxtime))
   {
@@ -518,8 +519,8 @@ void MyPaintHelper::DrawToDataPoint(const MyGraphEntry &datapoint)
       // There was a significant lapse in time since the last point,
       // which probably indicates that the client was turned off for
       // awhile, so draw a "drop" in the keyrate graph.
-      POINT point1 = PointToClientCoords((long)(lasttime + 0.25 * datapoint.duration), 0);
-      POINT point2 = PointToClientCoords((long)(datapoint.timestamp - 0.25 * datapoint.duration), 0);
+      POINT point1 = PointToClientCoords((long)(lasttime + 0.5 * datapoint.duration), 0);
+      POINT point2 = PointToClientCoords((long)(datapoint.timestamp - 0.5 * datapoint.duration), 0);
       LineTo(dc, point1.x, point1.y);
       LineTo(dc, point2.x, point2.y);
       LineTo(dc, point.x, point.y);
@@ -622,6 +623,10 @@ void MyPaintHelper::DisplayYAxisLabelDescription(const char *ylabel, const RECT 
 // Window repaint handler, called in response to WM_PAINT handling.
 int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 {
+  if (!TryEnterCriticalSection(&loggerbusy)) {
+    return TRUE;
+  }
+
   // select the font that we'll use and get the dimensions
 #if defined(DEFAULT_GUI_FONT)
   HGDIOBJ oldfont = SelectObject(dc, GetStockObject(DEFAULT_GUI_FONT));
@@ -641,17 +646,20 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   graphrect.bottom = clientrect.bottom - tmet.tmHeight * 5;   // room on bottom for x-axis label and x-axis tick marks
   if (graphrect.right <= graphrect.left || graphrect.bottom <= graphrect.top) {
      SelectObject(dc, oldfont);
+     LeaveCriticalSection(&loggerbusy);
      return TRUE;
   }
 
   if (loggerstate != logloaded) {
     SelectObject(dc, oldfont);
+    LeaveCriticalSection(&loggerbusy);
     return TRUE;
   }
 
   if (logdata.empty() || minrate == maxrate || mintime == maxtime) {
     bStateChanged = true;
     loggerstate = loginvalid;
+    LeaveCriticalSection(&loggerbusy);
     return TRUE;
   }
 
@@ -706,6 +714,7 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
                   "Work Unit noderate (nodes/sec)" :
                   "Work Unit keyrate (kkeys/sec)"), clientrect);
 
+  LeaveCriticalSection(&loggerbusy);
   return FALSE;
 }
 
