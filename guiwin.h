@@ -1,4 +1,4 @@
-// Copyright distributed.net 1997-2001 - All Rights Reserved
+// Copyright distributed.net 1997-2004 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
@@ -96,7 +96,13 @@ public:
   };
 
   enum contest_t {
-    CONTEST_UNKNOWN, CONTEST_RC5, CONTEST_RC5_72, CONTEST_DES, CONTEST_CSC, CONTEST_OGR = 5 
+    CONTEST_UNKNOWN, 
+    CONTEST_RC5, 
+    CONTEST_RC5_72, 
+    CONTEST_DES, 
+    CONTEST_CSC, 
+    CONTEST_OGR,
+    CONTEST_OGR_P2,
   };
 
 protected:
