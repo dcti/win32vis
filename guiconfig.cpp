@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiconfig.cpp,v 1.2 1999/09/10 09:36:00 jlawson Exp $";
+static char *id="@(#)$Id: guiconfig.cpp,v 1.3 1999/09/14 09:01:06 jlawson Exp $";
 #endif
 
 
@@ -88,7 +88,7 @@ BOOL CALLBACK MyGraphConfig::DialogProc(
       return mgc->OnCommand(hwndDlg, HIWORD(wParam),
           LOWORD(wParam), (HWND) lParam);
   };
-  return DefWindowProc(hwndDlg, uMsg, wParam, lParam);
+  return 0;   // no need to call DefWindowProc or DefDlgProc!
 }
 
 /////////////////////////////////////////////////////////////////////////////
