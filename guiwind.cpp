@@ -1,4 +1,4 @@
-// Copyright distributed.net 1997-2001 - All Rights Reserved
+// Copyright distributed.net 1997-2004 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.15 2002/12/31 04:21:35 sdodson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.16 2004/07/04 07:39:47 jlawson Exp $";
 #endif
 
 
@@ -99,6 +99,7 @@ LRESULT CALLBACK Main_WindowProc(
       EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_CONTEST_OGR_P2, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND | dwEnabledWithLogAndData);
 
       // Enable the "full zoom" menu item only when there is data and zoomed in.
@@ -206,7 +207,8 @@ LRESULT CALLBACK Main_WindowProc(
                  wID == IDM_CONTEST_RC5_72 ||
                  wID == IDM_CONTEST_DES ||
                  wID == IDM_CONTEST_CSC ||
-                 wID == IDM_CONTEST_OGR)
+                 wID == IDM_CONTEST_OGR ||
+                 wID == IDM_CONTEST_OGR_P2)
         {
           if (graphwin.SetViewedContestByMenuId(wID)) {
             // now trigger a reload from the log file.
