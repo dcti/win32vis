@@ -82,6 +82,8 @@ BEGIN
         MENUITEM "&Open log file...",           IDM_OPENLOGFILE
         MENUITEM "&Refresh log file",           IDM_REFRESHLOGFILE
         MENUITEM SEPARATOR
+        MENUITEM "Export to CSV...",            40003
+        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_EXIT
     END
     POPUP "&View"

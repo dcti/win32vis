@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.18 2004/07/04 11:46:15 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.19 2004/07/04 20:50:58 jlawson Exp $";
 #endif
 
 
@@ -102,6 +102,7 @@ LRESULT CALLBACK Main_WindowProc(
       EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_OGR) ? MF_ENABLED : MF_GRAYED));
       EnableMenuItem(hPopup, IDM_CONTEST_OGR_P2, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_OGR_P2) ? MF_ENABLED : MF_GRAYED));
       EnableMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND | dwEnabledWithLogAndData);
+      EnableMenuItem(hPopup, IDM_EXPORT_CSV, MF_BYCOMMAND | dwEnabledWithLogAndData);
 
       // Enable the "full zoom" menu item only when there is data and zoomed in.
       time_t zoomleft, zoomright;
@@ -185,6 +186,11 @@ LRESULT CALLBACK Main_WindowProc(
         else if (wID == IDM_REFRESHLOGFILE)
         {
           graphwin.LogRereadNeeded(hwnd);
+          return FALSE;
+        }
+        else if (wID == IDM_EXPORT_CSV)
+        {
+          Main_CmExportCSV(hwnd);
           return FALSE;
         }
         else if (wID == IDM_GRAPHCONFIG)
@@ -287,6 +293,33 @@ void Main_CmOpenLogfile(HWND hwnd)
   }
 }
 
+void Main_CmExportCSV(HWND hwnd)
+{
+  OPENFILENAME ofn;
+  char filterarray[] = { "CSV (Comma delimited) (*.CSV)\0" "*.CSV\0"
+          "All files (*.*)\0" "*.*\0" "\0\0" };
+
+  char exportfilename[512] = { '\0' };
+
+  memset(&ofn, 0, sizeof(ofn));
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = hwnd;
+  ofn.lpstrFilter = filterarray;
+  ofn.lpstrFile = exportfilename;
+  ofn.nMaxFile = sizeof(exportfilename);
+  ofn.lpstrTitle = "Select new file to export to";
+  ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+  ofn.lpstrDefExt = "CSV";
+
+  if (GetSaveFileName(&ofn))
+  {
+    int retval = graphwin.ExportCSV(exportfilename);
+    if (retval != 0) {
+      MessageBox(hwnd, "Failed to write exported data to file.",
+          NULL, MB_ICONERROR | MB_OK);
+    }
+  }         
+}
 
 void Main_UpdateTitlebar(HWND hwnd)
 {

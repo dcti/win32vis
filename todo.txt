@@ -8,10 +8,6 @@ shared with all others.
 - allow simultaneously displaying multiple projects at the same time 
   using colors and labels to indicate projects.
 
-- add "export" function to dump parsed dates and keyrates into a
-comma-separated text file that could be imported into Excel or some other
-application.
-
 - add parsing of personal proxy log files.
 
 - localtime timestamp display

@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.16 2004/07/04 20:49:40 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.17 2004/07/04 20:50:58 jlawson Exp $";
 #endif
 
 
@@ -766,7 +766,7 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   // start drawing the points
   HPEN graphline = CreatePen(PS_SOLID, 2, RGB(0x99, 0x33, 0x33));
   HPEN oldpen = (HPEN) SelectObject(dc, graphline);
-  for (LogDataStorage_t::iterator pointiter = logdata.begin();
+  for (LogDataStorage_t::const_iterator pointiter = logdata.begin();
        pointiter != logdata.end(); pointiter++) {
     paintstr.DrawToDataPoint(*pointiter);
   }
@@ -793,6 +793,42 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   DestroyCursor(waitcursor);
   LeaveCriticalSection(&loggerbusy);
   return FALSE;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+// Returns 0 on success, otherwise error.
+
+int MyGraphWindow::ExportCSV(const char *outputfile)
+{
+  int retval = 0;
+  EnterCriticalSection(&loggerbusy);
+
+  FILE *fp = fopen(outputfile, "wt");
+  if (fp != NULL) {
+    fprintf(fp, "timestamp,rate,duration,statunits\n");
+
+    for (LogDataStorage_t::const_iterator pointiter = logdata.begin();
+        pointiter != logdata.end(); pointiter++)
+    {
+      char buffer[30];
+      struct tm *gmt = gmtime(&pointiter->timestamp);
+      if (gmt)
+        strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M:%S", gmt);
+      else
+        strcpy(buffer, "unknown");
+
+      fprintf(fp, "%s,%g,%g,%g\n", buffer, pointiter->rate, pointiter->duration, pointiter->statunits);
+    }
+    fclose(fp);
+  } else {
+    retval = -1;
+  }
+
+  LeaveCriticalSection(&loggerbusy);
+  return retval;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -58,6 +58,7 @@ extern const char *LogGetCurrentLogFilename(void);
 extern void LogSetCurrentLogFilename(const char *filename, bool removeQuotes);
 extern LRESULT CALLBACK Main_WindowProc(HWND,UINT,WPARAM,LPARAM);
 extern void Main_CmOpenLogfile(HWND hwnd);
+extern void Main_CmExportCSV(HWND hwnd);
 extern void Main_CmAbout(HWND hwnd);
 extern void Main_UpdateTitlebar(HWND hwnd);
 
@@ -176,7 +177,11 @@ public:
   LoggerState GetStatusValue(void) const { return loggerstate; }
 
   // public interface methods.
+  // indicates of GetStatusString() will return a different value.
   bool HasStatusChanged(void) const { return bStateChanged; }
+
+  // public interface methods.
+  int ExportCSV(const char *outputfile);
 
   // public interface methods.
   UINT GetViewedContestMenuId(void) const;
