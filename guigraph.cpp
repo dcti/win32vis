@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.9 2001/01/19 00:17:50 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.10 2001/01/19 23:17:02 jlawson Exp $";
 #endif
 
 
@@ -640,7 +640,9 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 
 
   // set up the graphing window structure and scaling
-  MyPaintHelper paintstr(dc, &graphrect, minrate, maxrate, timelo, timehi);
+  MyPaintHelper paintstr(dc, &graphrect, 
+                         (bShowIdleDrops ? 0 : minrate), maxrate, 
+                         timelo, timehi);
 
   // draw the area for the graph
   HBRUSH back1 = (HBRUSH) GetStockObject(WHITE_BRUSH);
