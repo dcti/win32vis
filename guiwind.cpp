@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.8 1999/12/08 09:54:09 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.9 1999/12/30 19:16:03 jlawson Exp $";
 #endif
 
 
@@ -256,8 +256,9 @@ void Main_CmAbout(HWND hwnd)
       PROG_DESC_LONG ", " PROG_VERSION_STR "\n"
       "Distributed Computing Technologies, Inc.\n"
       "http://www.distributed.net/\n\n"
-      "Programmed by Jeff \"Bovine\" Lawson <bovine@distributed.net>\n\n"
-      "\nPlease send questions about this program to <help@distributed.net>";
+      "Programmed by Jeff \"Bovine\" Lawson <bovine@distributed.net>\n
+      "Other work by Yang You <yang_you@yahoo.com>\n\n"
+      "Please send questions about this program to <help@distributed.net>";
 
   MSGBOXPARAMS msgbox;
   msgbox.cbSize = sizeof(MSGBOXPARAMS);
