@@ -5,21 +5,9 @@ and send your changes to bovine@distributed.net so that they can be
 shared with all others.
 
 
-- show log filename on screen someplace.
-
-- indicate contest names
-
-- open file dialog on startup.
-
-- refresh menu item.
-
-- config dialog to menu item.
-
-- actually use the status bar instead of painting messages.
+- separate log data by contests, and color code and indicate contest names
 
 - add parsing of personal proxy log files.
-
-- command line acceptance of a filename to read.
 
 - localtime timestamp display
 
