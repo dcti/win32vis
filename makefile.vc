@@ -12,8 +12,7 @@ LOGVIS = .
 
 # --------------------------------------------
 
-OPTS_MSVC = -nologo -W3 -Ox -MT \
-  -DMULTITHREAD -D__WIN32__ -GR- -GX- -GA -GF
+OPTS_MSVC = -nologo -W3 -Ox -D__WIN32__ -GR- -GX- -GA -GF
 
 OPTS_LINK = /incremental:no
 
