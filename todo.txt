@@ -19,4 +19,11 @@ shared with all others.
 
 - add parsing of personal proxy log files.
 
+- command line acceptance of a filename to read.
+
+- localtime timestamp display
+
+- mru file list.
+
+- concatenation of multiple logfiles (dashed lines separating segments)
 
