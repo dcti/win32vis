@@ -9,6 +9,10 @@ contest was found in the logfile.
 
 - separate log data by contests, and color code and indicate contest names
 
+- add "export" function to dump parsed dates and keyrates into a
+comma-separated text file that could be imported into Excel or some other
+application.
+
 - add parsing of personal proxy log files.
 
 - localtime timestamp display
