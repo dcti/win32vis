@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.8 2001/01/18 00:54:55 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.9 2001/01/19 00:17:50 jlawson Exp $";
 #endif
 
 
@@ -130,6 +130,12 @@ static MyGraphWindow::contest_t __ParseContest(const char *stamp)
 //  ---
 //   [Jul 18 03:00:57 GMT] Completed RC5 block 6DE46FD9:00000000 (2147483648 keys)
 //   [Jul 18 03:00:57 GMT] 0.01:59:18.82 - [299,977.15 keys/sec]
+//  ---
+//   [Jan 06 19:19:06 UTC] Completed one DES block 001CFE87:B0000000 (8*2^28 keys)
+//                         0.00:27:13.87 - [2,501,662.63 keys/sec]
+//  ---
+//   [Oct 13 18:32:18 UTC] Completed one RC5 packet CC302DB9:70000000 (32*2^28 keys)
+//                         0.01:22:33.51 - [1,092,516.37 keys/sec]
 //  ---
 //   [Dec 16 03:25:59 UTC] Completed CSC packet 00205AE7:80000000 (4*2^28 keys)
 //                         0.00:22:46.15 - [786,534.65 keys/sec]

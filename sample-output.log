@@ -1,0 +1,142 @@
+this covers all the client versions that I ran in 1998 and 1999
+* note that I already fixed up my own logfiles, so I put back in the "one "
+  that was causing the trouble for your debugging benefit - I'm sure about all 
+  of these EXCEPT .436, because I retreated from that one to .432 after only a 
+  day or so *
+
+rc5des earlier than v2.7100.412
+[04/06/98 17:32:11 GMT] Completed block 68152C6D:40000000 (1073741824 keys)
+                        03:11:47.33 - [85462.02 keys/sec]
+
+rc5des v2.7100.412 [current year 1998]
+[Jul 01 18:47:03 GMT] Completed RC5 block 6B88B3AB:80000000 (1073741824 keys)
+                      0.01:46:17.72 - [71633.07 keys/sec]
+[Jul 13 21:17:12 GMT] Completed DES block 00031D45:00000000 (536870912 keys)
+                      0.01:07:55.25 - [131739.38 keys/sec]
+
+rc5des v2.7100.417 [current year 1999]
+[Jan 01 00:40:41 GMT] Completed RC5 block 751A7AC6:00000000 (2147483648 keys)
+[Jan 01 00:40:41 GMT] 0.01:05:25.42 - [547,071.05 keys/sec]
+[Jan 05 21:04:54 GMT] Completed DES block 007D42AA:E0000000 (4294967296 keys)
+[Jan 05 21:04:54 GMT] 0.00:28:35.98 - [2,502,923.86 keys/sec]
+
+RC5DES Client v2.7103.426 for Win32 (under Windows 4.0) started.
+Using distributed.net ID karsanow@wizrealm.com
+[Jan 06 19:19:06 UTC] Completed one DES block 001CFE87:B0000000 (8*2^28 keys)
+                      0.00:27:13.87 - [2,501,662.63 keys/sec]
+[Jan 06 19:28:57 UTC] Summary: 1 DES block 0.00:27:13.87 - [2.50 Mkeys/s]
+[Jan 09 08:40:13 UTC] Proxy Notification: DES contest is closed.
+[Jan 09 09:51:28 UTC] Completed one RC5 block 7C359C9C:00000000 (8*2^28 keys)
+                      0.00:42:20.63 - [845,256.35 keys/sec]
+
+RC5DES Client v2.7105.430 for Win32 (under Windows 4.0) started.
+Using distributed.net ID karsanow@wizrealm.com
+[Jan 15 00:37:32 UTC] Completed one DES block 00361027:70000000 (6*2^28 keys)
+                      0.00:15:42.58 - [3,417,455.78 keys/sec]
+[Jan 15 02:55:11 UTC] Summary: 8 DES blocks 0.02:33:09.82 - [3.38 Mkeys/s]
+[Jan 15 02:55:13 UTC] Proxy Notification: DES contest is closed.
+[Jan 15 02:55:13 UTC] Restarting...
+[Jan 15 03:37:30 UTC] Completed one RC5 block 7CE3807A:E0000000 (8*2^28 keys)
+                      0.00:42:17.22 - [846,392.36 keys/sec]
+
+RC5DES Client v2.7105.432 for Win32 (under Windows 4.0) started.
+Using email address (distributed.net ID) 'karsanow@wizrealm.com'
+[Jan 19 15:33:47 UTC] Completed one DES block 00334834:B0000000 (5*2^28 keys)
+                      0.00:12:47.20 - [3,498,898.01 keys/sec]
+[Jan 19 20:33:43 UTC] Summary: 20 DES blocks 0.04:27:58.39 - [3.37 Mkeys/s]
+[Jan 19 20:33:48 UTC] Proxy Notification: DES contest is closed.
+[Jan 19 20:33:48 UTC] Restarting...
+[Jan 19 21:06:26 UTC] Completed one RC5 block 7DC1A4EA:00000000 (6*2^28 keys)
+                      0.00:32:37.71 - [822,702.41 keys/sec]
+
+RC5DES v2.7106.436 GUI Client for Win32 (under Windows 4.0) started.
+Using email address (distributed.net ID) 'karsanow@wizrealm.com'
+[Feb 16 17:12:11 UTC] Completed one RC5 block 843B0226:00000000 (6*2^28 keys)
+                      0.00:27:50.06 - [964,404.11 keys/sec]
+
+
+rc5des v2.7112.444-CTR-99092203 client for Win32 (Windows 4.0).
+Using email address (distributed.net ID) 'karsanow@twrol.com'
+
+[Oct 13 17:09:44 UTC] Loaded RC5 32*2^28 packet CC302DB9:70000000 (37.00% done)
+[Oct 13 17:09:44 UTC] 2 RC5 packets (64 work units) remain in buff-in.rc5
+[Oct 13 17:09:44 UTC] 2 RC5 packets (34 work units) are in buff-out.rc5
+[Oct 13 17:09:44 UTC] 1 cruncher has been started.
+
+[Oct 13 18:32:18 UTC] Completed one RC5 packet CC302DB9:70000000 (32*2^28 keys)
+                      0.01:22:33.51 - [1,092,516.37 keys/sec]
+
+
+dnetc v2.8002-446-CTR-99111622 client for Win32 (Windows 4.0).
+Using email address (distributed.net ID) 'karsanow@twrol.com'
+
+[Nov 18 21:18:57 UTC] Loaded CSC 32*2^28 packet 000EE800:00000000
+[Nov 18 21:18:57 UTC] 3 CSC packets (96 work units) remain in buff-in.csc
+[Nov 18 21:18:57 UTC] 0 CSC packets (0 work units) are in buff-out.csc
+[Nov 18 21:18:57 UTC] 1 cruncher has been started.
+
+[Nov 19 02:45:00 UTC] Completed CSC packet 000EE800:00000000 (32*2^28 keys)
+                      0.05:26:05.49 - [439,058.34 keys/sec]
+
+
+dnetc v2.8002-447-CTR-99112401 client for Win32 (Windows 4.0).
+Using email address (distributed.net ID) 'karsanow@twrol.com'
+
+[Nov 26 16:36:49 UTC] Loaded CSC 4*2^28 packet 00AB6101:40000000
+[Nov 26 16:36:49 UTC] 7 CSC packets (28 work units) remain in buff-in.csc
+[Nov 26 16:36:49 UTC] 2 CSC packets (8 work units) are in buff-out.csc
+[Nov 26 16:36:49 UTC] 1 cruncher has been started.
+
+[Nov 26 17:17:56 UTC] Completed CSC packet 00AB6101:40000000 (4*2^28 keys)
+                      0.00:41:06.90 - [435,445.17 keys/sec]
+
+[Nov 30 14:26:09 UTC] Loaded RC5 random 1*2^28 packet 654900F8:10000000
+[Nov 30 14:26:09 UTC] Summary: 55 RC5 packets (290*2^28 work units)
+                      0.19:56:56.04 - [1.08 Mkeys/s]
+[Nov 30 14:26:09 UTC] 0 RC5 packets (0 work units) remain in buff-in.rc5
+[Nov 30 14:26:09 UTC] 50 RC5 packets (130 work units) are in buff-out.rc5
+
+[Nov 30 14:31:15 UTC] Completed RC5 packet 654900F8:10000000 (1*2^28 keys)
+                      0.00:04:07.56 - [1,084,302.93 keys/sec]
+
+
+dnetc v2.8003-448-CTR-99121215 for Win32 (Windows 4.0).
+Using email address (distributed.net ID) 'karsanow@twrol.com'
+
+[Dec 13 16:04:06 UTC] Loaded RC5 32*2^28 packet 6B6EBC34:50000000
+                      Packet was from a client with another cpu/os/build.
+[Dec 13 16:04:06 UTC] 0 RC5 packets (0 work units) remain in buff-in.rc5
+[Dec 13 16:04:06 UTC] 3 RC5 packets (41 work units) are in buff-out.rc5
+[Dec 13 16:04:06 UTC] 1 cruncher has been started.
+[Dec 13 16:04:07 UTC] The keyserver says: "Hi from statsbox 1"
+[Dec 13 16:04:16 UTC] Retrieved 8 packets (142 work units) from server.
+[Dec 13 16:04:17 UTC] Sent 4 packets (45 work units) to server.
+[Dec 13 18:30:21 UTC] Completed RC5 packet 6B6EBC34:50000000 (32*2^28 keys)
+                      0.02:26:16.46 - [978,868.73 keys/sec]
+[Dec 13 18:30:21 UTC] Loaded CSC 4*2^28 packet 0000F2DF:20000000
+[Dec 13 18:30:21 UTC] Summary: 1 RC5 packet (32*2^28 work units)
+                      0.02:26:16.46 - [978.86 kkeys/s]
+[Dec 13 18:30:21 UTC] 4 RC5 packets (128 work units) remain in buff-in.rc5
+[Dec 13 18:30:21 UTC] 1 RC5 packet (32 work units) is in buff-out.rc5
+[Dec 13 18:30:21 UTC] Summary: 0 CSC packets (0*2^28 work units)
+                      0.00:00:00.00
+[Dec 13 18:30:21 UTC] 3 CSC packets (10 work units) remain in buff-in.csc
+[Dec 13 18:30:21 UTC] 0 CSC packets (0 work units) are in buff-out.csc
+[Dec 13 18:50:13 UTC] Completed CSC packet 0000F2DF:20000000 (4*2^28 keys)
+                      0.00:19:52.00 - [901,447.61 keys/sec]
+
+
+dnetc v2.8004-450-CTR-99122011 for Win32 (Windows 4.0).
+Using email address (distributed.net ID) 'karsanow@twrol.com'
+
+[Dec 22 17:13:22 UTC] Loaded CSC 32*2^28 packet 0048DBE2:E0000000 (1.00% done)
+[Dec 22 17:13:22 UTC] 1 CSC packet (32 work units) remains in buff-in.csc
+[Dec 22 17:13:22 UTC] 7 CSC packets (224 work units) are in buff-out.csc
+[Dec 22 17:13:22 UTC] 1 cruncher has been started.
+[Dec 22 17:13:27 UTC] RC5: using core #2 (RG class 6).
+[Dec 22 19:50:35 UTC] Completed CSC packet 0048DBE2:E0000000 (32*2^28 keys)
+                      0.02:37:14.68 - [901,386.38 keys/sec]
+[Dec 22 19:50:35 UTC] Loaded CSC 32*2^28 packet 0048DBE0:E0000000
+                      Packet was from a different core/client cpu/os/build.
+[Dec 22 19:50:35 UTC] Summary: 1 CSC packet (32*2^28 work units)
+                      0.02:37:14.68 - [901.38 kkeys/s]
