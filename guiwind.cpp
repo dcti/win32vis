@@ -1,4 +1,4 @@
-// Copyright distributed.net 1997-1999 - All Rights Reserved
+// Copyright distributed.net 1997-2001 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.10 1999/12/31 23:32:46 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.11 2001/01/15 07:37:38 jlawson Exp $";
 #endif
 
 
@@ -44,10 +44,10 @@ void LogSetCurrentLogFilename(const char *filename, bool removeQuotes)
 /////////////////////////////////////////////////////////////////////////////
 
 LRESULT CALLBACK Main_WindowProc(
-    HWND  hwnd,	// handle of window
-    UINT  uMsg,	// message identifier
-    WPARAM  wParam,	// first message parameter
-    LPARAM  lParam 	// second message parameter
+    HWND  hwnd, // handle of window
+    UINT  uMsg, // message identifier
+    WPARAM  wParam, // first message parameter
+    LPARAM  lParam  // second message parameter
    )
 {
   switch (uMsg)
@@ -77,7 +77,7 @@ LRESULT CALLBACK Main_WindowProc(
       DragQueryFile((HDROP) wParam, 0,
           __currentlogfilename, sizeof(__currentlogfilename));
       DragFinish((HDROP) wParam);
-          
+
       // trigger the reload to occur in the background.
       graphwin.LogRereadNeeded(hwnd);
       Main_UpdateTitlebar(hwnd);
@@ -87,11 +87,21 @@ LRESULT CALLBACK Main_WindowProc(
     case WM_INITMENU:
     {
       HMENU hPopup = (HMENU) wParam;
-      
-      EnableMenuItem(hPopup, IDM_REFRESHLOGFILE, MF_BYCOMMAND |
-          (graphwin.GetStatusValue() != MyGraphWindow::nologloaded ? MF_ENABLED : MF_GRAYED));
-      EnableMenuItem(hPopup, IDM_GRAPHCONFIG, MF_BYCOMMAND |
-          (graphwin.GetStatusValue() == MyGraphWindow::logloaded ? MF_ENABLED : MF_GRAYED));
+
+      // Enable or disable the menu items that are not valid without a logfile.
+      DWORD dwEnabledWithLogAndData = (graphwin.GetStatusValue() == MyGraphWindow::logloaded ? MF_ENABLED : MF_GRAYED);
+      DWORD dwEnabledWithLog = (graphwin.GetStatusValue() != MyGraphWindow::nologloaded ? MF_ENABLED : MF_GRAYED);
+      EnableMenuItem(hPopup, IDM_REFRESHLOGFILE, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_GRAPHCONFIG, MF_BYCOMMAND | dwEnabledWithLogAndData);
+      EnableMenuItem(hPopup, IDM_CONTEST_RC5, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | dwEnabledWithLog);
+
+      // Set the radio button on whichever contest is currently selected.
+      UINT radioselect = graphwin.GetViewedContestMenuId();
+      CheckMenuRadioItem(hPopup, IDM_CONTEST_RC5, IDM_CONTEST_OGR,
+                         radioselect, MF_BYCOMMAND);
       return FALSE;
     }
 
@@ -108,7 +118,7 @@ LRESULT CALLBACK Main_WindowProc(
 
       // Repaint the window.
       if (BeginPaint(hwnd, &m_ps))
-      {      
+      {
         if ((savedcontext = SaveDC(m_ps.hdc)) != 0)
         {
           // Compute the rectangle of the client paint area,
@@ -132,15 +142,15 @@ LRESULT CALLBACK Main_WindowProc(
       if (graphwin.HasStatusChanged())
         SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), SB_SETTEXT,
             0, (LPARAM) graphwin.GetStatusString());
-      
+
       return FALSE;
     }
 
     case WM_COMMAND:
     {
-      WORD wNotifyCode = HIWORD(wParam); // notification code 
-      WORD wID = LOWORD(wParam);         // control identifier 
-      
+      WORD wNotifyCode = HIWORD(wParam); // notification code
+      WORD wID = LOWORD(wParam);         // control identifier
+
       if (wNotifyCode == 0)
       {
         if (wID == IDM_EXIT)
@@ -167,16 +177,27 @@ LRESULT CALLBACK Main_WindowProc(
         {
           // require that a logfile is already loaded.
           if (graphwin.IsDataAvailable())
-          {      
+          {
             // bring up the configuration dialog
             MyGraphConfig config;
             graphwin.GetDataRange(config.datastart, config.dataend);
             graphwin.GetRange(config.starttime, config.endtime);
             config.DoModal(hwnd);
             graphwin.SetRange(config.starttime, config.endtime);
-  
+
             // force a redraw
             InvalidateRect(hwnd, NULL, TRUE);
+          }
+          return FALSE;
+        }
+        else if (wID == IDM_CONTEST_RC5 ||
+                 wID == IDM_CONTEST_DES ||
+                 wID == IDM_CONTEST_CSC ||
+                 wID == IDM_CONTEST_OGR)
+        {
+          if (graphwin.SetViewedContestByMenuId(wID)) {
+            // now trigger a reload from the log file.
+            graphwin.LogRereadNeeded(hwnd);
           }
           return FALSE;
         }
@@ -189,7 +210,7 @@ LRESULT CALLBACK Main_WindowProc(
     {
       // require that a logfile is already loaded.
       if (graphwin.IsDataAvailable())
-      {      
+      {
         // bring up the configuration dialog
         MyGraphConfig config;
         graphwin.GetDataRange(config.datastart, config.dataend);
@@ -216,7 +237,7 @@ void Main_CmOpenLogfile(HWND hwnd)
   OPENFILENAME ofn;
   char filterarray[] = { "Log files (*.LOG)\0" "*.LOG\0"
           "All files (*.*)\0" "*.*\0" "\0\0" };
-  
+
   memset(&ofn, 0, sizeof(ofn));
   ofn.lStructSize = sizeof(ofn);
   ofn.hwndOwner = hwnd;
@@ -226,7 +247,7 @@ void Main_CmOpenLogfile(HWND hwnd)
   ofn.lpstrTitle = "Select distributed.net logfile to load";
   ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
   ofn.lpstrDefExt = "LOG";
-  
+
   if (GetOpenFileName(&ofn))
   {
     // trigger the reload to occur in the background.
@@ -242,7 +263,7 @@ void Main_UpdateTitlebar(HWND hwnd)
 
   // display the file name in the titlebar.
   _snprintf(buff, sizeof(buff),
-      "%s - [%s]", PROG_DESC_LONG, __currentlogfilename); 
+      "%s - [%s]", PROG_DESC_LONG, __currentlogfilename);
   SetWindowText(hwnd, buff);
 }
 

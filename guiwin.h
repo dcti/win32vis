@@ -1,4 +1,4 @@
-// Copyright distributed.net 1997-1999 - All Rights Reserved
+// Copyright distributed.net 1997-2001 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
@@ -16,6 +16,7 @@
 #elif defined(_MSC_VER)
   // MS Visual C++ warnings
   #pragma warning(disable:4068)   // unknown pragma
+  #pragma warning(disable:4530)   // unwind symantecs not used.
   #if (_MSC_VER < 1100)
     typedef int bool;
     #define false (0)
@@ -33,16 +34,20 @@
 #include <commdlg.h>
 #include <shellapi.h>
 
-// C Library functions
+// ANSI C Library functions
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 
+// Standard Template Library headers.
+#include <queue>
+#include <list>
+using namespace std;
+
 // gui encapsulation headers
 #include "resource.h"
-#include "guidlist.h"
 #include "sliderrange.h"
 
 
@@ -71,11 +76,9 @@ struct MyGraphEntry
   time_t timestamp;
   double rate;
   double duration;
-  double keycount;
+  double statunits;
 
-  friend bool operator==( const MyGraphEntry &a, const MyGraphEntry &b)
-    { return (a.timestamp == b.timestamp) && (a.rate == b.rate) &&
-        (a.duration == b.duration) && (a.keycount == b.keycount); }
+  operator time_t(void) const { return timestamp; }
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -88,30 +91,41 @@ struct MyGraphEntry
 class MyGraphWindow
 {
 public:
-  enum LoggerState { nologloaded, lognotfound, loadinprogress, logloaded, loginvalid };
+  enum LoggerState {
+    nologloaded, lognotfound, loadinprogress, logloaded, loginvalid
+  };
+
+  enum contest_t {
+    CONTEST_UNKNOWN, CONTEST_RC5, CONTEST_DES, CONTEST_CSC, CONTEST_OGR = 4
+  };
 
 protected:
-  // storage variables.
-  TDoubleListImp<MyGraphEntry> logdata;
+
+  // data type to represent the data storage class.
+#if 0
+  typedef priority_queue< deque<MyGraphEntry>, less<time_t>() > LogDataStorage_t;
+#else
+  typedef deque<MyGraphEntry> LogDataStorage_t;
+#endif
+
+  // storage data variables.
+  LogDataStorage_t logdata;
   time_t mintime, maxtime;
   double minrate, maxrate;
   double totalkeys;
+
+  // user configurable options.
   time_t rangestart, rangeend;
+  contest_t viewedcontest;
+
+  // current application state.
   HANDLE hLogThread;
-
-
-  // current graphing state.
   LoggerState loggerstate;
   bool bStateChanged;
 
   // log parsing
-  static time_t ParseTimestamp(char *stamp);
-  static double ParseDuration(char *stamp);
-  void ReadLogData(void);
   static long LogParseThread(long lParam);
-
-  // log painting
-  static void IterDrawFuncRate(MyGraphEntry &datapoint, void *vptr);
+  void ReadLogData(void);
 
 public:
   // constructor and destructor.
@@ -119,36 +133,41 @@ public:
   ~MyGraphWindow(void);
 
   // window repainting.
-  int	DoRedraw(HDC dc, RECT clientrect);
+  int DoRedraw(HDC dc, RECT clientrect);
 
   // public interface methods.
   void LogRereadNeeded(HWND hwnd);
 
   // public interface methods.
-  void GetDataRange(time_t &start, time_t &end)
+  void GetDataRange(time_t &start, time_t &end) const
     { start = mintime; end = maxtime; }
 
   // public interface methods.
-  void GetRange(time_t &start, time_t &end)
+  void GetRange(time_t &start, time_t &end) const
     { start = rangestart; end = rangeend; }
-  
+
   // public interface methods.
   void SetRange(time_t start, time_t end)
     { rangestart = start; rangeend = end; }
 
   // public interface methods.
-  bool IsDataAvailable(void)
-    { return loggerstate == logloaded && !logdata.IsEmpty() &&
+  bool IsDataAvailable(void) const
+    { return loggerstate == logloaded && !logdata.empty() &&
           minrate != maxrate && mintime != maxtime; }
 
   // public interface methods.
+  // also resets the status changed tracker.
   const char *GetStatusString(void);
 
   // public interface methods.
-  LoggerState GetStatusValue(void) { return loggerstate; }
+  LoggerState GetStatusValue(void) const { return loggerstate; }
 
   // public interface methods.
-  bool HasStatusChanged(void) { return bStateChanged; }
+  bool HasStatusChanged(void) const { return bStateChanged; }
+
+  // public interface methods.
+  UINT GetViewedContestMenuId(void) const;
+  bool SetViewedContestByMenuId(UINT menuid);
 
 };
 

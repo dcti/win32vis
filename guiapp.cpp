@@ -1,11 +1,11 @@
-// Copyright distributed.net 1997-1999 - All Rights Reserved
+// Copyright distributed.net 1997-2001 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.6 1999/12/31 23:31:10 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.7 2001/01/15 07:37:38 jlawson Exp $";
 #endif
 
 
@@ -27,7 +27,7 @@ int WINAPI WinMain(
   InitCommonControls();
   if (!RegisterSliderRangeClass())
     MessageBox(NULL, "Slider Range class registration failed.", NULL, MB_OK);
-  
+
 
   // Register the window class.
   memset(&wcex, 0, sizeof(wcex));

@@ -45,7 +45,7 @@ IDI_ICON_MAIN           ICON    DISCARDABLE     "cowhead.ico"
 //
 
 IDD_GRAPHCFG DIALOG DISCARDABLE  0, 0, 242, 119
-STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION |
     WS_SYSMENU
 CAPTION "Log Visualizer Range Selection"
 FONT 8, "MS Sans Serif"
@@ -53,14 +53,14 @@ BEGIN
     CONTROL         "My Sliding Rectangle",IDC_SLIDERRANGE,"SlideControl",
                     0x0,10,9,222,20
     LTEXT           "Starting &date:",IDC_STATIC,8,52,44,8,NOT WS_GROUP
-    COMBOBOX        IDC_COMBOSTART,58,50,98,55,CBS_DROPDOWNLIST | WS_VSCROLL | 
+    COMBOBOX        IDC_COMBOSTART,58,50,98,55,CBS_DROPDOWNLIST | WS_VSCROLL |
                     WS_TABSTOP
-    CONTROL         "Text3",IDS_STARTDATE,"Static",SS_LEFTNOWORDWRAP | 
+    CONTROL         "Text3",IDS_STARTDATE,"Static",SS_LEFTNOWORDWRAP |
                     SS_SUNKEN,160,51,72,10
     LTEXT           "Ending d&ate:",IDC_STATIC,8,68,43,8,NOT WS_GROUP
-    COMBOBOX        IDC_COMBOEND,58,66,98,56,CBS_DROPDOWNLIST | WS_VSCROLL | 
+    COMBOBOX        IDC_COMBOEND,58,66,98,56,CBS_DROPDOWNLIST | WS_VSCROLL |
                     WS_TABSTOP
-    CONTROL         "Text4",IDS_ENDDATE,"Static",SS_LEFTNOWORDWRAP | 
+    CONTROL         "Text4",IDS_ENDDATE,"Static",SS_LEFTNOWORDWRAP |
                     SS_SUNKEN,160,67,72,10
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,6,88,226,1
     PUSHBUTTON      "O&K",IDOK,64,94,50,14,BS_CENTER
@@ -75,22 +75,29 @@ END
 // Menu
 //
 
-IDM_MENU1 MENU DISCARDABLE 
+IDM_MENU1 MENU DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Open log file...",           IDM_OPENLOGFILE
         MENUITEM "&Refresh log file",           IDM_REFRESHLOGFILE
         MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+    POPUP "&View"
+    BEGIN
         MENUITEM "&Zoom range...",              IDM_GRAPHCONFIG
         MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       IDM_EXIT
+        MENUITEM "&RC5 Project data",           IDM_CONTEST_RC5
+        MENUITEM "&DES Project data",           IDM_CONTEST_DES
+        MENUITEM "&CSC Project data",           IDM_CONTEST_CSC
+        MENUITEM "&OGR Project data",           IDM_CONTEST_OGR
     END
     POPUP "&Help"
     BEGIN
         MENUITEM "&About...",                      IDM_ABOUT
     END
-    
+
 END
 
 
@@ -101,8 +108,8 @@ END
 //
 
 VERSIONINFO_1 VERSIONINFO
- FILEVERSION 1,1,0,0
- PRODUCTVERSION 1,1,0,0
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
  FILEFLAGSMASK 0x0L
 #ifdef _DEBUG
  FILEFLAGS 0x3dL
@@ -119,13 +126,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Distributed Computing Technologies, Inc.\0"
             VALUE "FileDescription", "distributed.net Logfile Visualizer\0"
-            VALUE "FileVersion", "1.1.0\0"
+            VALUE "FileVersion", "1.2.0\0"
             VALUE "InternalName", "logvis.exe\0"
-            VALUE "LegalCopyright", "Copyright © 1997-1999. All Rights Reserved.\0"
+            VALUE "LegalCopyright", "Copyright © 1997-2001. All Rights Reserved.\0"
             VALUE "LegalTrademarks", "Windows(TM) is a trademark of Microsoft Corporation\0"
             VALUE "OriginalFilename", "logvis.exe\0"
             VALUE "ProductName", "distributed.net Logfile Visualizer\0"
-            VALUE "ProductVersion", "1.1.0\0"
+            VALUE "ProductVersion", "1.2.0\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -143,12 +150,12 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE DISCARDABLE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE DISCARDABLE
 BEGIN
     "#include ""version.h""\r\n"
     "#ifdef __BORLANDC__\r\n"
@@ -162,7 +169,7 @@ BEGIN
     "#endif\r\n"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE DISCARDABLE
 BEGIN
     "\r\n"
     "\0"
