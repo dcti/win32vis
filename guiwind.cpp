@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.5 1999/12/08 08:09:48 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.6 1999/12/08 08:40:11 jlawson Exp $";
 #endif
 
 
@@ -65,6 +65,13 @@ LRESULT CALLBACK Main_WindowProc(
       RECT clientrect, statusrect;
       int savedcontext;
 
+      // Update the status bar
+      if (graphwin.HasStatusChanged())
+        SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), SB_SETTEXT,
+            0, (LPARAM) graphwin.GetStatusString());
+
+
+      // Repaint the window.
       if (BeginPaint(hwnd, &m_ps))
       {      
         if ((savedcontext = SaveDC(m_ps.hdc)) != 0)
@@ -80,7 +87,7 @@ LRESULT CALLBACK Main_WindowProc(
           clientrect.right -= GetSystemMetrics(SM_CXFRAME);
 
           // actually perform the repaint operation.
-          graphwin.DoRedraw(m_ps.hdc, clientrect, GetDlgItem(hwnd, IDC_STATUSBAR));
+          graphwin.DoRedraw(m_ps.hdc, clientrect);
         }
         RestoreDC(m_ps.hdc, savedcontext);
         EndPaint(hwnd, &m_ps);
@@ -180,18 +187,22 @@ void Main_CmOpenLogfile(HWND hwnd)
   ofn.lpstrDefExt = "LOG";
   
   if (GetOpenFileName(&ofn))
+  {
+    // trigger the reload to occur in the background.
     graphwin.LogRereadNeeded(hwnd);
 
-  //display the file name
-  char buf[1000];
-  sprintf(buf, "%s - logfile at: %s", PROG_DESC_LONG, ofn.lpstrFile); 
-  SetWindowText(hwnd, buf);
+    // display the file name
+    char buf[1000];
+    sprintf(buf, "%s - [%s]", PROG_DESC_LONG, ofn.lpstrFile); 
+    SetWindowText(hwnd, buf);
+  }
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
+
 void Main_CmAbout(HWND hwnd)
 {
   const char *buffer =

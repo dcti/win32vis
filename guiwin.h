@@ -81,7 +81,7 @@ struct MyGraphEntry
 class MyGraphWindow
 {
 protected:
-  enum LoggerState { nologloaded, lognotfound, loadinprogress, logloaded };
+  enum LoggerState { nologloaded, lognotfound, loadinprogress, logloaded, loginvalid };
 
   // storage variables.
   TDoubleListImp<MyGraphEntry> logdata;
@@ -94,6 +94,7 @@ protected:
 
   // current graphing state.
   LoggerState loggerstate;
+  bool bStateChanged;
 
   // log parsing
   static time_t ParseTimestamp(char *stamp);
@@ -110,7 +111,7 @@ public:
   ~MyGraphWindow(void);
 
   // window repainting.
-  int	DoRedraw(HDC dc, RECT clientrect, HWND hwnd);
+  int	DoRedraw(HDC dc, RECT clientrect);
 
   // public interface methods.
   void LogRereadNeeded(HWND hwnd);
@@ -131,6 +132,11 @@ public:
   bool IsDataAvailable(void)
     { return loggerstate == logloaded && !logdata.IsEmpty() &&
           minrate != maxrate && mintime != maxtime; }
+
+  // public interface methods.
+  const char *GetStatusString(void);
+  bool HasStatusChanged(void) { return bStateChanged; }
+
 };
 
 /////////////////////////////////////////////////////////////////////////////

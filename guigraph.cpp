@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.4 1999/12/08 08:09:48 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.5 1999/12/08 08:40:11 jlawson Exp $";
 #endif
 
 
@@ -21,6 +21,7 @@ MyGraphWindow::MyGraphWindow(void) : hLogThread(NULL)
   
   // set the flags
   loggerstate = nologloaded;
+  bStateChanged = true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -124,9 +125,6 @@ void MyGraphWindow::ReadLogData(void)
   minrate = maxrate = 0;
   totalkeys = 0;
 
-  // loading now in progress.
-  //UpdateWindow();
-
   // open up the log.
   FILE *fp = fopen(LogGetCurrentLogFilename(), "rt");
   if (fp)
@@ -201,10 +199,12 @@ void MyGraphWindow::ReadLogData(void)
     // close the log
     fclose(fp);
     loggerstate = logloaded;
+    bStateChanged = true;
   }
   else
   {
     loggerstate = lognotfound;
+    bStateChanged = true;
   }
 }
 
@@ -342,8 +342,41 @@ void MyGraphWindow::IterDrawFuncRate(MyGraphEntry &datapoint, void *vptr)
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
+const char *MyGraphWindow::GetStatusString(void)
+{
+  bStateChanged = false;
+  if (loggerstate == loadinprogress)
+  {
+    return "Please wait, currently reloading log file.";
+  }
+  else if (loggerstate == lognotfound)
+  {
+    return "Could not load any data for graphing.  This may "
+        "indicate that there was a problem opening the log file.";
+  }
+  else if (loggerstate == nologloaded)
+  {
+    return "You must specify a log file to be used for graph visualization.";
+  }
+  else if (loggerstate == loginvalid)
+  {
+    return "Could not load any data for graphing.  This may "
+        "indicate that there was no graphable data inside of the "
+        "specified log file.";
+  }
+  else if (loggerstate == logloaded)
+  {
+    return "Log file successfully loaded.";
+  }
+  return "Unknown state.";
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
 // Window repaint handler, called in response to WM_PAINT handling.
-int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect, HWND hwnd)
+int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 {
   RECT graphrect;
   TEXTMETRIC tmet;
@@ -356,31 +389,15 @@ int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect, HWND hwnd)
   if (graphrect.right <= graphrect.left ||
     graphrect.bottom <= graphrect.top) return TRUE;
 
-  if (loggerstate == loadinprogress)
+  if (loggerstate != logloaded)
   {
-    SendMessage(hwnd, SB_SETTEXT, 0, (LPARAM)
-        "Please wait, currently reloading log file.");
     return TRUE;
   }
-  else if (loggerstate == lognotfound)
+
+  if (logdata.IsEmpty() || minrate == maxrate || mintime == maxtime)
   {
-    SendMessage(hwnd, SB_SETTEXT,
-              0, (LPARAM) "Could not load any data for graphing.  This may "
-        "indicate that there was a problem opening the log file.");
-    return TRUE;
-  }
-  else if (loggerstate == nologloaded)
-  {
-    SendMessage(hwnd, SB_SETTEXT, 0, (LPARAM)
-        "You must specify a log file to be used for graph visualization.");
-    return TRUE;
-  }
-  else if (logdata.IsEmpty() || minrate == maxrate || mintime == maxtime)
-  {
-    SendMessage(hwnd, SB_SETTEXT, 0, (LPARAM)
-      "Could not load any data for graphing.  This may "
-        "indicate that there was no graphable data inside of the "
-        "specified log file");
+    bStateChanged = true;
+    loggerstate = loginvalid;
     return TRUE;
   }
 
