@@ -88,7 +88,7 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About",                      IDM_ABOUT
+        MENUITEM "&About...",                      IDM_ABOUT
     END
     
 END
@@ -101,8 +101,8 @@ END
 //
 
 VERSIONINFO_1 VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x0L
 #ifdef _DEBUG
  FILEFLAGS 0x3dL
@@ -119,13 +119,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Distributed Computing Technologies, Inc.\0"
             VALUE "FileDescription", "distributed.net Logfile Visualizer\0"
-            VALUE "FileVersion", "1.0.0\0"
+            VALUE "FileVersion", "1.1.0\0"
             VALUE "InternalName", "logvis.exe\0"
             VALUE "LegalCopyright", "Copyright © 1997-1999. All Rights Reserved.\0"
             VALUE "LegalTrademarks", "Windows(TM) is a trademark of Microsoft Corporation\0"
             VALUE "OriginalFilename", "logvis.exe\0"
             VALUE "ProductName", "distributed.net Logfile Visualizer\0"
-            VALUE "ProductVersion", "1.0.0\0"
+            VALUE "ProductVersion", "1.1.0\0"
         END
     END
     BLOCK "VarFileInfo"

@@ -47,9 +47,15 @@
 
 // function prototypes.
 extern const char *LogGetCurrentLogFilename(void);
+extern void LogSetCurrentLogFilename(const char *filename, bool removeQuotes);
 extern LRESULT CALLBACK Main_WindowProc(HWND,UINT,WPARAM,LPARAM);
 extern void Main_CmOpenLogfile(HWND hwnd);
 extern void Main_CmAbout(HWND hwnd);
+extern void Main_UpdateTitlebar(HWND hwnd);
+
+// data prototypes.
+class MyGraphWindow;
+extern MyGraphWindow graphwin;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -80,9 +86,10 @@ struct MyGraphEntry
 
 class MyGraphWindow
 {
-protected:
+public:
   enum LoggerState { nologloaded, lognotfound, loadinprogress, logloaded, loginvalid };
 
+protected:
   // storage variables.
   TDoubleListImp<MyGraphEntry> logdata;
   time_t mintime, maxtime;
@@ -135,6 +142,11 @@ public:
 
   // public interface methods.
   const char *GetStatusString(void);
+
+  // public interface methods.
+  LoggerState GetStatusValue(void) { return loggerstate; }
+
+  // public interface methods.
   bool HasStatusChanged(void) { return bStateChanged; }
 
 };

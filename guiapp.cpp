@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.4 1999/12/08 08:09:48 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.5 1999/12/08 09:36:55 jlawson Exp $";
 #endif
 
 
@@ -40,8 +40,7 @@ int WINAPI WinMain(
   wcex.lpszMenuName = MAKEINTRESOURCE(IDM_MENU1);
   wcex.hIconSm = (HICON) LoadImage(hInstance,
       MAKEINTRESOURCE(IDI_ICON_MAIN), IMAGE_ICON,
-      GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON),
-      LR_SHARED);     //LR_LOADREALSIZE
+      16, 16, LR_SHARED);     //LR_LOADREALSIZE
   wcex.lpszClassName = "DnetLogVis";
   if (!RegisterClassEx(&wcex))
   {
@@ -60,8 +59,18 @@ int WINAPI WinMain(
     return 1;
   }
 
-  // display the open dialog file on startup
-  Main_CmOpenLogfile(hwnd);
+  if (lpszCmdLine && lstrlen(lpszCmdLine) > 0)
+  {
+    // trigger the reload to occur in the background.
+    LogSetCurrentLogFilename(lpszCmdLine, true);
+    graphwin.LogRereadNeeded(hwnd);
+    Main_UpdateTitlebar(hwnd);
+  }
+  else
+  {
+    // display the open dialog file on startup.
+    Main_CmOpenLogfile(hwnd);
+  }
 
   // Run the message loop.
   MSG msg;

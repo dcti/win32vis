@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.6 1999/12/08 08:40:11 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.7 1999/12/08 09:36:55 jlawson Exp $";
 #endif
 
 
@@ -20,6 +20,23 @@ static char __currentlogfilename[200] = {0};
 const char *LogGetCurrentLogFilename(void)
 {
   return __currentlogfilename;
+}
+
+void LogSetCurrentLogFilename(const char *filename, bool removeQuotes)
+{
+  // copy the string.
+  lstrcpyn(__currentlogfilename, filename, sizeof(__currentlogfilename));
+  __currentlogfilename[sizeof(__currentlogfilename) - 1] = 0;
+
+  // remove leading and trailing quotes, if needed.
+  int len = strlen(__currentlogfilename);
+  if (removeQuotes && len >= 2 &&
+      (__currentlogfilename[0] == '"') &&
+      (__currentlogfilename[len - 1] == '"') )
+  {
+    memmove(__currentlogfilename, __currentlogfilename + 1, len - 2);
+    __currentlogfilename[len - 2] = 0;
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,7 +69,15 @@ LRESULT CALLBACK Main_WindowProc(
       break;      
 
     case WM_INITMENU:
-      break;
+    {
+      HMENU hPopup = (HMENU) wParam;
+      
+      EnableMenuItem(hPopup, IDM_REFRESHLOGFILE, MF_BYCOMMAND |
+          (graphwin.GetStatusValue() != MyGraphWindow::nologloaded ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_GRAPHCONFIG, MF_BYCOMMAND |
+          (graphwin.GetStatusValue() == MyGraphWindow::logloaded ? MF_ENABLED : MF_GRAYED));
+      return FALSE;
+    }
 
     case WM_SIZE:
       SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), WM_SIZE, wParam, lParam);
@@ -64,12 +89,6 @@ LRESULT CALLBACK Main_WindowProc(
       PAINTSTRUCT m_ps;
       RECT clientrect, statusrect;
       int savedcontext;
-
-      // Update the status bar
-      if (graphwin.HasStatusChanged())
-        SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), SB_SETTEXT,
-            0, (LPARAM) graphwin.GetStatusString());
-
 
       // Repaint the window.
       if (BeginPaint(hwnd, &m_ps))
@@ -92,6 +111,12 @@ LRESULT CALLBACK Main_WindowProc(
         RestoreDC(m_ps.hdc, savedcontext);
         EndPaint(hwnd, &m_ps);
       }
+
+      // Update the status bar
+      if (graphwin.HasStatusChanged())
+        SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), SB_SETTEXT,
+            0, (LPARAM) graphwin.GetStatusString());
+      
       return FALSE;
     }
 
@@ -190,14 +215,20 @@ void Main_CmOpenLogfile(HWND hwnd)
   {
     // trigger the reload to occur in the background.
     graphwin.LogRereadNeeded(hwnd);
-
-    // display the file name
-    char buf[1000];
-    sprintf(buf, "%s - [%s]", PROG_DESC_LONG, ofn.lpstrFile); 
-    SetWindowText(hwnd, buf);
+    Main_UpdateTitlebar(hwnd);
   }
 }
 
+
+void Main_UpdateTitlebar(HWND hwnd)
+{
+  char buff[sizeof(PROG_DESC_LONG) + sizeof(__currentlogfilename) + 10];
+
+  // display the file name in the titlebar.
+  _snprintf(buff, sizeof(buff),
+      "%s - [%s]", PROG_DESC_LONG, __currentlogfilename); 
+  SetWindowText(hwnd, buff);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
