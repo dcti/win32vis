@@ -1,8 +1,8 @@
 # RC5DES Win32 Log Visualizer makefile (Borland C++ for Win32 x86)
 # see http://www.distributed.net/
 
-EXENAME = ../../logvis.exe
-OUTPUTPATH = ../../output
+EXENAME = logvis.exe
+OUTPUTPATH = output
 LOGVIS = .
 
 

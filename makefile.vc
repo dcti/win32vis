@@ -2,8 +2,8 @@
 # feel free to generalize to do Win32 Alpha as well
 # see http://www.distributed.net/
 
-EXENAME = ../../logvis.exe
-OUTPUTPATH = ../../output
+EXENAME = logvis.exe
+OUTPUTPATH = output
 LOGVIS = .
 
 
