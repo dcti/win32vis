@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.7 2001/01/15 07:37:38 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.8 2001/01/15 08:31:11 jlawson Exp $";
 #endif
 
 
@@ -49,12 +49,11 @@ int WINAPI WinMain(
   }
 
   // Create an instance of the window.
-  HWND hwnd = NULL;
-  if (!(hwnd = CreateWindowEx(0, wcex.lpszClassName, PROG_DESC_LONG,
+  HWND hwnd = CreateWindowEx(0, wcex.lpszClassName, PROG_DESC_LONG,
       WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_THICKFRAME,
       CW_USEDEFAULT, CW_USEDEFAULT, 620, 370,
-      NULL, NULL, hInstance, NULL)))
-  {
+      NULL, NULL, hInstance, NULL);
+  if (!hwnd) {
     MessageBox(NULL, "Window creation failed.", NULL, MB_OK | MB_ICONERROR);
     return 1;
   }
