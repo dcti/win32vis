@@ -17,4 +17,9 @@ shared with all others.
 
 - mark fetch/flush operations in graph with vertical line
 
+- menu option to disable the drawing of the "rate drops" that are 
+automatically inserted when gaps in time intervals occur.
+
+- save window size/position in registry
+
 
