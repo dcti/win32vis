@@ -1,4 +1,5 @@
-# RC5DES Win32 Log Visualizer makefile (Borland C++ for Win32 x86)
+# RC5DES Win32 Log Visualizer makefile (MS Visual C++ for Win32 x86)
+# feel free to generalize to do Win32 Alpha as well
 # see http://www.distributed.net/
 
 EXENAME = ../../logvis.exe
@@ -12,28 +13,22 @@ LOGVIS = .
 
 # --------------------------------------------
 
-BCCOPTS = /a4 /Vv /x- /xd- /RT- /r /k- /d /w /O2 /O /OS \
-  /I$(COMMONPATH) /D_CPU_32BIT_ /DMULTITHREAD /tWM
+OPTS_MSVC = -nologo -W3 -Ox -MT -I$(COMMONPATH) -D_CPU_32BIT_ \
+  -DMULTITHREAD -D__WIN32__ -GR- -GX- -GA -GF
 
-TLINKOPTS = /aa /x /Tpe /n /B:0x400000
+OPTS_LINK = /incremental:no
 
-GUI_LIBS = noeh32.lib cw32mt.lib import32.lib
+GUI_LIBS = advapi32.lib user32.lib gdi32.lib comdlg32.lib comctl32.lib
 
 # --------------------------------------------
 
 !ifdef DEBUG
-BCCOPTS = /v $(BCCOPTS)
-TLINKOPTS = /v $(TLINKOPTS)
+OPTS_MSVC = -Zi $(OPTS_MSVC)
+OPTS_LINK = $(OPTS_LINK) /debug /pdb:none /pdbtype:consolidate
 !else
-BCCOPTS = $(BCCOPTS) /DNDEBUG
+OPTS_MSVC = $(OPTS_MSVC) /DNDEBUG
+OPTS_LINK = $(OPTS_LINK) /release
 !endif
-
-# --------------------------------------------
-
-.path.cpp = $(COMMONPATH);$(LOGVIS)
-.path.obj = $(OUTPUTPATH)
-.path.res = $(OUTPUTPATH)
-.path.rc = $(LOGVIS)
 
 # --------------------------------------------
 
@@ -48,21 +43,17 @@ GUI_RES = $(OUTPUTPATH)/guiwin.res
 
 # --------------------------------------------
 
-.cpp.obj:
-        bcc32 -c @&&|
--P $(BCCOPTS) -n$(OUTPUTPATH)
-| $< 
+{$(LOGVIS)}.rc{$(OUTPUTPATH)}.res:
+	rc -d_Windows -d_M_IX86 -i $(COMMONPATH) -fo$@ $(**:/=\)
 
-.rc.res:
-        brcc32 -D_Windows -D_M_IX86 -D__BORLANDC__ -r -w32 -fo$@ -i$(COMMONPATH) $**
+{$(LOGVIS)}.cpp{$(OUTPUTPATH)}.obj:
+	cl -c $(OPTS_MSVC) -Fo$@ $**
 
 # --------------------------------------------
 
 # Actual target
 $(EXENAME): $(GUI_OBJS) $(GUI_RES)
-        tlink32 $(TLINKOPTS) @&&|
-c0w32.obj $(GUI_OBJS:/=\),$(EXENAMEG:/=\),,$(GUI_LIBS),,$(GUI_RES:/=\)
-|
+	link $(OPTS_LINK) /OUT:$(EXENAME) $(GUI_LIBS) $**
 
 # --------------------------------------------
 
