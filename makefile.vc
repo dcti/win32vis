@@ -12,11 +12,11 @@ LOGVIS = .
 
 # --------------------------------------------
 
-OPTS_MSVC = -nologo -W3 -Ox -D__WIN32__ -GR- -GX- -GA -GF
+OPTS_MSVC = -nologo -W3 -Ox -D__WIN32__ -D_DLL -D_MT -GR- -GX- -GA -GF
 
-OPTS_LINK = /incremental:no
+OPTS_LINK = /incremental:no /nodefaultlib
 
-GUI_LIBS = advapi32.lib user32.lib gdi32.lib comdlg32.lib comctl32.lib shell32.lib
+GUI_LIBS = kernel32.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib comctl32.lib shell32.lib msvcrt.lib
 
 # --------------------------------------------
 
