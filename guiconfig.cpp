@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiconfig.cpp,v 1.4 1999/09/15 10:24:34 jlawson Exp $";
+static char *id="@(#)$Id: guiconfig.cpp,v 1.5 2002/12/31 04:21:34 sdodson Exp $";
 #endif
 
 
@@ -22,10 +22,21 @@ struct EventType
 };
 
 static EventType graphevents [] = {
-  {"End of RC5-56", 854438400L},        // January 28, 1997 13:25 GMT
+  {"Start of RC5-56", 854438400L},      // January 28, 1997 13:25 GMT
+  {"End of RC5-56", 877492800L},	// Wed Oct 22 00:00:00 EDT 1997
+  {"Start of RC5-64", 877492800L},	// Wed Oct 22 00:00:00 EDT 1997
   {"Start of DESII-1", 884674800L},     // January 13, 1998 at 09:00 PST
   {"End of DESII-1", 888197160L},       // February 23, 1998 at 02:26 PST
   {"Start of DESII-2", 877260300L},     // Mon Jul 13 09:00:00 1998 PST
+  {"End of DESII-2", 900648000L},	// Fri Jul 17 00:00:00 EDT 1998
+  {"Start of DESIII", 916635600L},	// Mon Jan 18 00:00:00 EST 1999
+  {"End of DESIII", 916722000L},	// Tue Jan 19 00:00:00 EST 1999
+  {"Start of CSC", 943678800L},		// Sat Nov 27 00:00:00 EST 1999
+  {"End of CSC", 947912400L},		// Sat Jan 15 00:00:00 EST 2000
+  {"Start of OGR-24", 963460800L},	// Thu Jul 13 00:00:00 EDT 2000
+  {"Start of OGR-25", 965102400L},	// Tue Aug  1 00:00:00 EDT 2000
+  {"End of RC5-64", 1026619200L},	// Sun Jul 14 00:00:00 EDT 2002
+  {"Start of RC5-72", 1038891600L},	// Tue Dec  3 00:00:00 EST 2002
   {NULL, 0} };
 
 

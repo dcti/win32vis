@@ -140,3 +140,23 @@ Using email address (distributed.net ID) 'karsanow@twrol.com'
                       Packet was from a different core/client cpu/os/build.
 [Dec 22 19:50:35 UTC] Summary: 1 CSC packet (32*2^28 work units)
                       0.02:37:14.68 - [901.38 kkeys/s]
+
+
+dnetc v2.9001-478-CTR-02112023 for FreeBSD (FreeBSD 5.0-CURRENT).
+Using email address (distributed.net ID) 'sdodson@sdodson.com'
+
+[Dec 24 17:18:43 UTC] Automatic processor type detection found
+                      an Intel Celeron-A (Mendocino/Dixon) processor.
+[Dec 24 17:19:19 UTC] RC5-72: using core #4 (SES 2-pipe).
+[Dec 24 17:19:19 UTC] RC5-72: Loaded CA:42B09C80:00000000:1*2^32
+[Dec 24 17:19:19 UTC] RC5-72: 23 packets (23.00 stats units) remain in
+                      buff-in.r72
+                      Projected ideal time to completion: 1.08:13:09.00
+[Dec 24 17:19:19 UTC] RC5-72: 0 packets are in buff-out.r72
+[Dec 24 17:19:19 UTC] 1 cruncher has been started.
+[Dec 24 18:55:42 UTC] RC5-72: Completed CA:42B09C80:00000000 (1.00 stats units)
+                      0.01:36:22.65 - [742,743 keys/s]
+[Dec 24 18:55:42 UTC] RC5-72: Loaded CA:42B09C81:00000000:1*2^32
+[Dec 24 18:55:42 UTC] RC5-72: Summary: 1 packet (1.00 stats units)
+                      0.01:36:22.65 - [742,743 keys/s]
+                 

@@ -1,7 +1,7 @@
 
-  distributed.net's Logfile Visualizer documentation ver 1.2.0
+  distributed.net's Logfile Visualizer documentation ver 1.2.2
  
-  Copyright distributed.net 1997-2001 - All Rights Reserved
+  Copyright distributed.net 1997-2002 - All Rights Reserved
   For use in distributed.net projects only.
   Any other distribution violates copyright.
 

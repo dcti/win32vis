@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.14 2001/01/19 23:17:46 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.15 2002/12/31 04:21:35 sdodson Exp $";
 #endif
 
 
@@ -95,6 +95,7 @@ LRESULT CALLBACK Main_WindowProc(
       EnableMenuItem(hPopup, IDM_REFRESHLOGFILE, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_GRAPHCONFIG, MF_BYCOMMAND | dwEnabledWithLogAndData);
       EnableMenuItem(hPopup, IDM_CONTEST_RC5, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_CONTEST_RC5_72, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | dwEnabledWithLog);
@@ -109,10 +110,9 @@ LRESULT CALLBACK Main_WindowProc(
       // Check or uncheck the drop menu item.
       CheckMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND |
                     (bShowIdleDrops ? MF_CHECKED : MF_UNCHECKED));
-
       // Set the radio button on whichever contest is currently selected.
       UINT radioselect = graphwin.GetViewedContestMenuId();
-      CheckMenuRadioItem(hPopup, IDM_CONTEST_RC5, IDM_CONTEST_OGR,
+      CheckMenuRadioItem(hPopup, IDM_CONTEST_RC5, IDM_CONTEST_RC5_72,
                          radioselect, MF_BYCOMMAND);
       return FALSE;
     }
@@ -203,6 +203,7 @@ LRESULT CALLBACK Main_WindowProc(
           return FALSE;
         }
         else if (wID == IDM_CONTEST_RC5 ||
+                 wID == IDM_CONTEST_RC5_72 ||
                  wID == IDM_CONTEST_DES ||
                  wID == IDM_CONTEST_CSC ||
                  wID == IDM_CONTEST_OGR)

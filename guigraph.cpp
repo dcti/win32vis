@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.10 2001/01/19 23:17:02 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.11 2002/12/31 04:21:34 sdodson Exp $";
 #endif
 
 
@@ -18,7 +18,7 @@ MyGraphWindow::MyGraphWindow(void) : hLogThread(NULL)
   // set the default ranges
   rangestart = (time_t) -1;
   rangeend = (time_t) -1;
-  viewedcontest = CONTEST_RC5;
+  viewedcontest = CONTEST_RC5_72;
 
   // set the flags
   loggerstate = nologloaded;
@@ -110,10 +110,12 @@ static double __ParseDuration(const char *stamp)
 
 static MyGraphWindow::contest_t __ParseContest(const char *stamp)
 {
+  //MessageBox(NULL, stamp, NULL, MB_OK | MB_ICONERROR);
   if (strncmp(stamp, "RC5", 3) == 0) return MyGraphWindow::CONTEST_RC5;
   else if (strncmp(stamp, "DES", 3) == 0) return MyGraphWindow::CONTEST_DES;
   else if (strncmp(stamp, "CSC", 3) == 0) return MyGraphWindow::CONTEST_CSC;
   else if (strncmp(stamp, "OGR", 3) == 0) return MyGraphWindow::CONTEST_OGR;
+  else if (strncmp(stamp, "-72", 3) == 0) return MyGraphWindow::CONTEST_RC5_72;
   else return MyGraphWindow::CONTEST_UNKNOWN;
 }
 
@@ -145,6 +147,10 @@ static MyGraphWindow::contest_t __ParseContest(const char *stamp)
 //  ---
 //   [Nov 09 03:38:02 UTC] RC5: Completed (1.00 stats units)
 //                         0.00:02:43.43 - [176,486 keys/s]
+//  ---
+//   [Dec 22 09:07:32 UTC] RC5-72: Completed CA:407B9B7F:00000000 (1.00 stats units)
+//                         0.01:25:53.63 - [833,398 keys/s]
+
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -693,6 +699,7 @@ UINT MyGraphWindow::GetViewedContestMenuId(void) const
 {
   switch (viewedcontest) {
     case CONTEST_RC5: return IDM_CONTEST_RC5;
+    case CONTEST_RC5_72: return IDM_CONTEST_RC5_72;
     case CONTEST_DES: return IDM_CONTEST_DES;
     case CONTEST_CSC: return IDM_CONTEST_CSC;
     case CONTEST_OGR: return IDM_CONTEST_OGR;
@@ -704,6 +711,7 @@ bool MyGraphWindow::SetViewedContestByMenuId(UINT menuid)
 {
   switch (menuid) {
     case IDM_CONTEST_RC5: viewedcontest = CONTEST_RC5; return true;
+    case IDM_CONTEST_RC5_72: viewedcontest = CONTEST_RC5_72; return true;
     case IDM_CONTEST_DES: viewedcontest = CONTEST_DES; return true;
     case IDM_CONTEST_CSC: viewedcontest = CONTEST_CSC; return true;
     case IDM_CONTEST_OGR: viewedcontest = CONTEST_OGR; return true;

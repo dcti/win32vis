@@ -91,7 +91,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Emphasize &Idle periods"      IDM_SHOWIDLE
         MENUITEM SEPARATOR
-        MENUITEM "&RC5 Project data",           IDM_CONTEST_RC5
+        MENUITEM "RC5-&64 Project data",        IDM_CONTEST_RC5
+        MENUITEM "RC5-&72 Project data",        IDM_CONTEST_RC5_72
         MENUITEM "&DES Project data",           IDM_CONTEST_DES
         MENUITEM "&CSC Project data",           IDM_CONTEST_CSC
         MENUITEM "&OGR Project data",           IDM_CONTEST_OGR
@@ -111,8 +112,8 @@ END
 //
 
 VERSIONINFO_1 VERSIONINFO
- FILEVERSION 1,2,1,0
- PRODUCTVERSION 1,2,1,0
+ FILEVERSION 1,2,2,0
+ PRODUCTVERSION 1,2,2,0
  FILEFLAGSMASK 0x0L
 #ifdef _DEBUG
  FILEFLAGS 0x3dL
@@ -129,13 +130,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Distributed Computing Technologies, Inc.\0"
             VALUE "FileDescription", "distributed.net Logfile Visualizer\0"
-            VALUE "FileVersion", "1.2.1\0"
+            VALUE "FileVersion", "1.2.2\0"
             VALUE "InternalName", "logvis.exe\0"
-            VALUE "LegalCopyright", "Copyright © 1997-2001. All Rights Reserved.\0"
+            VALUE "LegalCopyright", "Copyright © 1997-2002. All Rights Reserved.\0"
             VALUE "LegalTrademarks", "Windows(TM) is a trademark of Microsoft Corporation\0"
             VALUE "OriginalFilename", "logvis.exe\0"
             VALUE "ProductName", "distributed.net Logfile Visualizer\0"
-            VALUE "ProductVersion", "1.2.1\0"
+            VALUE "ProductVersion", "1.2.2\0"
         END
     END
     BLOCK "VarFileInfo"
