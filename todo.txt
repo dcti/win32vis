@@ -4,6 +4,8 @@ implement any of these changes (or others that you feel would be valuable)
 and send your changes to bovine@distributed.net so that they can be
 shared with all others.
 
+- make contests listed in "View" menu become disabled if no data for that
+contest was found in the logfile.
 
 - separate log data by contests, and color code and indicate contest names
 
@@ -13,12 +15,11 @@ shared with all others.
 
 - mru file list.
 
-- concatenation of multiple logfiles (dashed lines separating segments)
+- concatenation of multiple logfiles (with perhaps dashed lines separating
+segments).  File/Open should allow multiple files to be selected, and
+drag-and-drop should accept multiple files at once.
 
 - mark fetch/flush operations in graph with vertical line
-
-- menu option to disable the drawing of the "rate drops" that are 
-automatically inserted when gaps in time intervals occur.
 
 - save window size/position in registry
 
