@@ -1,15 +1,22 @@
-show log filename on screen
+Here is a list of possible future things that could be improved in a 
+future version of the Win32 Log Visualizer.  Feel free to attempt to
+implement any of these changes (or others that you feel would be valuable)
+and send your changes to bovine@distributed.net so that they can be
+shared with all others.
 
-indicate contest names
 
-open file dialog on startup.
+- show log filename on screen someplace.
 
-refresh menu item.
+- indicate contest names
 
-config dialog to menu item.
+- open file dialog on startup.
 
-actually use the status bar instead of painting messages.
+- refresh menu item.
 
-add parsing of personal proxy log files.
+- config dialog to menu item.
+
+- actually use the status bar instead of painting messages.
+
+- add parsing of personal proxy log files.
 
 
