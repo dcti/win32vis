@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.12 2001/01/15 08:25:07 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.13 2001/01/15 08:31:30 jlawson Exp $";
 #endif
 
 
@@ -275,7 +275,11 @@ void Main_UpdateTitlebar(HWND hwnd)
   char buff[sizeof(PROG_DESC_LONG) + sizeof(__currentlogfilename) + 10];
 
   // display the file name in the titlebar.
+#ifdef HAVE_SNPRINTF
   _snprintf(buff, sizeof(buff),
+#else
+  sprintf(buff,
+#endif
       "%s - [%s]", PROG_DESC_LONG, __currentlogfilename);
   SetWindowText(hwnd, buff);
 }
