@@ -49,6 +49,19 @@ static void SliderRangeOnPaint(HWND hwnd, SliderRangeStruc *srs)
           srs->rightside, outer.bottom - 1 };
     DrawFrameControl(memdc, &inner, DFC_BUTTON, DFCS_BUTTONPUSH);
 
+    if (srs->rightside - srs->leftside > 16)
+    {
+      // draw ridges on the left side.
+      RECT ridge1 = { srs->leftside + 3, outer.top + 4,
+            srs->leftside + 8, outer.bottom - 5 };
+      DrawEdge(memdc, &ridge1, EDGE_BUMP, BF_LEFT | BF_RIGHT);
+
+      // draw ridges on the right side.
+      RECT ridge2 = { srs->rightside - 9, outer.top + 4,
+            srs->rightside - 4, outer.bottom - 5 };
+      DrawEdge(memdc, &ridge2, EDGE_BUMP, BF_LEFT | BF_RIGHT);
+    }
+
     // copy the object to the screen
     BitBlt(dc, 0, 0, outer.right, outer.bottom, memdc, 0, 0, SRCCOPY);
 
