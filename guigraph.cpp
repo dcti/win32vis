@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.15 2004/07/04 13:04:11 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.16 2004/07/04 20:49:40 jlawson Exp $";
 #endif
 
 
@@ -785,7 +785,7 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 
   // display the rotated y-axis label
   paintstr.DisplayYAxisLabelDescription(
-            (viewedcontest == CONTEST_OGR ?
+            (viewedcontest == CONTEST_OGR || viewedcontest == CONTEST_OGR_P2 ?
                   "Work Unit noderate (nodes/sec)" :
                   "Work Unit keyrate (kkeys/sec)"), clientrect);
 
