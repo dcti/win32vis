@@ -4,7 +4,6 @@
 
 EXENAME = ../../logvis.exe
 OUTPUTPATH = ../../output
-COMMONPATH = ../../common
 LOGVIS = .
 
 
@@ -13,7 +12,7 @@ LOGVIS = .
 
 # --------------------------------------------
 
-OPTS_MSVC = -nologo -W3 -Ox -MT -I$(COMMONPATH) -D_CPU_32BIT_ \
+OPTS_MSVC = -nologo -W3 -Ox -MT \
   -DMULTITHREAD -D__WIN32__ -GR- -GX- -GA -GF
 
 OPTS_LINK = /incremental:no
@@ -44,7 +43,7 @@ GUI_RES = $(OUTPUTPATH)/guiwin.res
 # --------------------------------------------
 
 {$(LOGVIS)}.rc{$(OUTPUTPATH)}.res:
-	rc -d_Windows -d_M_IX86 -i $(COMMONPATH) -fo$@ $(**:/=\)
+	rc -d_Windows -d_M_IX86 -fo$@ $(**:/=\)
 
 {$(LOGVIS)}.cpp{$(OUTPUTPATH)}.obj:
 	cl -c $(OPTS_MSVC) -Fo$@ $**

@@ -3,7 +3,6 @@
 
 EXENAME = ../../logvis.exe
 OUTPUTPATH = ../../output
-COMMONPATH = ../../common
 LOGVIS = .
 
 
@@ -13,7 +12,7 @@ LOGVIS = .
 # --------------------------------------------
 
 BCCOPTS = /a4 /Vv /x- /xd- /RT- /r /k- /d /w /O2 /O /OS \
-  /I$(COMMONPATH) /D_CPU_32BIT_ /DMULTITHREAD /tWM
+  /DMULTITHREAD /tWM
 
 TLINKOPTS = /aa /x /Tpe /n /B:0x400000
 
@@ -30,7 +29,7 @@ BCCOPTS = $(BCCOPTS) /DNDEBUG
 
 # --------------------------------------------
 
-.path.cpp = $(COMMONPATH);$(LOGVIS)
+.path.cpp = $(LOGVIS)
 .path.obj = $(OUTPUTPATH)
 .path.res = $(OUTPUTPATH)
 .path.rc = $(LOGVIS)
@@ -54,7 +53,7 @@ GUI_RES = $(OUTPUTPATH)/guiwin.res
 | $< 
 
 .rc.res:
-        brcc32 -D_Windows -D_M_IX86 -D__BORLANDC__ -r -w32 -fo$@ -i$(COMMONPATH) $**
+        brcc32 -D_Windows -D_M_IX86 -D__BORLANDC__ -r -w32 -fo$@ $**
 
 # --------------------------------------------
 

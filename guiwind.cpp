@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.3 1999/09/10 09:36:00 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.4 1999/09/10 09:59:09 jlawson Exp $";
 #endif
 
 
@@ -176,22 +176,18 @@ void Main_CmAbout(HWND hwnd)
       "Programmed by Jeff \"Bovine\" Lawson <bovine@distributed.net>\n\n"
       "\nPlease send questions about this program to <help@distributed.net>";
 
-  #if (CLIENT_OS == OS_WIN32) || (CLIENT_OS == OS_WIN32S)
-    MSGBOXPARAMS msgbox;
-    msgbox.cbSize = sizeof(MSGBOXPARAMS);
-    msgbox.hwndOwner = hwnd;
-    msgbox.hInstance = (HINSTANCE) GetWindowLong(hwnd, GWL_HINSTANCE);
-    msgbox.lpszText = buffer;
-    msgbox.lpszCaption = "About this Program";
-    msgbox.dwStyle = MB_USERICON | MB_OK;
-    msgbox.lpszIcon = MAKEINTRESOURCE(IDI_ICON_MAIN);
-    msgbox.dwContextHelpId = 0;
-    msgbox.lpfnMsgBoxCallback = NULL;
-    msgbox.dwLanguageId = MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT);
-    MessageBoxIndirect(&msgbox);
-  #else
-    MessageBox(buffer, "About this Program", MB_OK | MB_ICONINFORMATION);
-  #endif
+  MSGBOXPARAMS msgbox;
+  msgbox.cbSize = sizeof(MSGBOXPARAMS);
+  msgbox.hwndOwner = hwnd;
+  msgbox.hInstance = (HINSTANCE) GetWindowLong(hwnd, GWL_HINSTANCE);
+  msgbox.lpszText = buffer;
+  msgbox.lpszCaption = "About this Program";
+  msgbox.dwStyle = MB_USERICON | MB_OK;
+  msgbox.lpszIcon = MAKEINTRESOURCE(IDI_ICON_MAIN);
+  msgbox.dwContextHelpId = 0;
+  msgbox.lpfnMsgBoxCallback = NULL;
+  msgbox.dwLanguageId = MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT);
+  MessageBoxIndirect(&msgbox);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.2 1999/09/09 09:02:10 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.3 1999/09/10 09:59:09 jlawson Exp $";
 #endif
 
 
@@ -455,9 +455,7 @@ int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   
 
   // change to a small black pen for drawing the tick marks.
-#if (CLIENT_OS == OS_WIN32)
   HGDIOBJ oldbrush = SelectObject(dc, GetSysColorBrush(COLOR_WINDOWTEXT));
-#endif
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, RGB(0, 0, 0));
   SelectObject(dc, GetStockObject(BLACK_PEN));
@@ -496,9 +494,7 @@ int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
         point.x + tmet.tmAveCharWidth * 10, point.y + 6 + 3 * tmet.tmHeight};
     DrawText(dc, buffer, -1, &rect, DT_CENTER);
   }
-#if (CLIENT_OS == OS_WIN32)
   SelectObject(dc, oldbrush);
-#endif
   SelectObject(dc, oldfont);
 
 
@@ -510,11 +506,7 @@ int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   oldfont = SelectObject(dc, unrotatedfont);
   char *xlabel = "Work Unit completion date";
   SIZE xlabelsize;
-#if (CLIENT_OS == OS_WIN16)
-  GetTextExtentPoint(dc, xlabel, strlen(xlabel), &xlabelsize);
-#else
   GetTextExtentPoint32(dc, xlabel, strlen(xlabel), &xlabelsize);
-#endif
   TextOut(dc, graphrect.left + (graphrect.right - graphrect.left - xlabelsize.cx) / 2,
       clientrect.bottom - xlabelsize.cy, xlabel, strlen(xlabel));
   SelectObject(dc, oldfont);
@@ -529,11 +521,7 @@ int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   oldfont = SelectObject(dc, rotatedfont);
   char *ylabel = "Work Unit keyrate (kkeys/sec)";
   SIZE ylabelsize;
-#if (CLIENT_OS == OS_WIN16)
-  GetTextExtentPoint(dc, ylabel, strlen(ylabel), &ylabelsize);
-#else
   GetTextExtentPoint32(dc, ylabel, strlen(ylabel), &ylabelsize);
-#endif
   TextOut(dc, 0, graphrect.top + ylabelsize.cx +
     (graphrect.bottom - graphrect.top - ylabelsize.cx) / 2, ylabel, strlen(ylabel));
   SelectObject(dc, oldfont);

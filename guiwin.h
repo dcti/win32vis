@@ -23,7 +23,6 @@
   #endif
 #endif
 
-#include "cputypes.h"
 #include "version.h"
 
 
