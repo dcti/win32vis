@@ -60,7 +60,7 @@ GUI_RES = $(OUTPUTPATH)/guiwin.res
 # Actual target
 $(EXENAME): $(GUI_OBJS) $(GUI_RES)
         tlink32 $(TLINKOPTS) @&&|
-c0w32.obj $(GUI_OBJS:/=\),$(EXENAMEG:/=\),,$(GUI_LIBS),,$(GUI_RES:/=\)
+c0w32.obj $(GUI_OBJS:/=\),$(EXENAME:/=\),,$(GUI_LIBS),,$(GUI_RES:/=\)
 |
 
 # --------------------------------------------
