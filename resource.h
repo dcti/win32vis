@@ -3,11 +3,11 @@
 // Used by guiwin.rc
 //
 #define VERSIONINFO_1                   1
-#define IDI_ICON_MAIN                   200
-#define IDM_MENU1                       215
 #define IDM_EXIT                        100
 #define IDM_ABOUT                       101
 #define IDM_OPENLOGFILE                 102
+#define IDI_ICON_MAIN                   200
+#define IDM_MENU1                       215
 #define IDD_GRAPHCFG                    261
 #define IDC_COMBOSTART                  523
 #define IDC_COMBOEND                    524
@@ -15,6 +15,7 @@
 #define IDS_ENDDATE                     526
 #define IDS_STARTDATE                   527
 #define IDC_STATUSBAR                   600
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
