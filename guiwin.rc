@@ -80,12 +80,17 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Open log file...",           IDM_OPENLOGFILE
+        MENUITEM "&Refresh log file",           IDM_REFRESHLOGFILE
+        MENUITEM SEPARATOR
+        MENUITEM "&Zoom range...",              IDM_GRAPHCONFIG
+        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_EXIT
     END
     POPUP "&Help"
     BEGIN
         MENUITEM "&About",                      IDM_ABOUT
     END
+    
 END
 
 

@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.3 1999/09/10 09:36:00 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.4 1999/12/08 08:09:48 jlawson Exp $";
 #endif
 
 
@@ -50,19 +50,24 @@ int WINAPI WinMain(
   }
 
   // Create an instance of the window.
-  if (!CreateWindowEx(0, wcex.lpszClassName, PROG_DESC_LONG,
+  HWND hwnd = NULL;
+  if (!(hwnd = CreateWindowEx(0, wcex.lpszClassName, PROG_DESC_LONG,
       WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_THICKFRAME,
       CW_USEDEFAULT, CW_USEDEFAULT, 620, 370,
-      NULL, NULL, hInstance, NULL))
+      NULL, NULL, hInstance, NULL)))
   {
     MessageBox(NULL, "Window creation failed.", NULL, MB_OK | MB_ICONERROR);
     return 1;
   }
 
+  // display the open dialog file on startup
+  Main_CmOpenLogfile(hwnd);
+
   // Run the message loop.
   MSG msg;
   while (GetMessage(&msg, NULL, NULL, NULL) == TRUE)
     DispatchMessage(&msg);
+
 
   return 0;
 }

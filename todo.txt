@@ -27,3 +27,6 @@ shared with all others.
 
 - concatenation of multiple logfiles (dashed lines separating segments)
 
+- mark fetch/flush operations in graph with vertical line
+
+

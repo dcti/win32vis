@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.4 1999/09/10 09:59:09 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.5 1999/12/08 08:09:48 jlawson Exp $";
 #endif
 
 
@@ -51,9 +51,6 @@ LRESULT CALLBACK Main_WindowProc(
       PostQuitMessage(0);
       break;      
 
-//
-//SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), SB_SETTEXT, 0, "Blah");
-
     case WM_INITMENU:
       break;
 
@@ -83,7 +80,7 @@ LRESULT CALLBACK Main_WindowProc(
           clientrect.right -= GetSystemMetrics(SM_CXFRAME);
 
           // actually perform the repaint operation.
-          graphwin.DoRedraw(m_ps.hdc, clientrect);
+          graphwin.DoRedraw(m_ps.hdc, clientrect, GetDlgItem(hwnd, IDC_STATUSBAR));
         }
         RestoreDC(m_ps.hdc, savedcontext);
         EndPaint(hwnd, &m_ps);
@@ -113,6 +110,29 @@ LRESULT CALLBACK Main_WindowProc(
           Main_CmOpenLogfile(hwnd);
           return FALSE;
         }
+        else if (wID == IDM_REFRESHLOGFILE)
+        {
+          graphwin.LogRereadNeeded(hwnd);
+          return FALSE;
+        }
+        else if (wID == IDM_GRAPHCONFIG)
+        {
+          // require that a logfile is already loaded.
+          if (graphwin.IsDataAvailable())
+          {      
+            // bring up the configuration dialog
+            MyGraphConfig config;
+            graphwin.GetDataRange(config.datastart, config.dataend);
+            graphwin.GetRange(config.starttime, config.endtime);
+            config.DoModal(hwnd);
+            graphwin.SetRange(config.starttime, config.endtime);
+  
+            // force a redraw
+            InvalidateRect(hwnd, NULL, TRUE);
+          }
+          return FALSE;
+        }
+
       }
       break;
     }
@@ -161,12 +181,17 @@ void Main_CmOpenLogfile(HWND hwnd)
   
   if (GetOpenFileName(&ofn))
     graphwin.LogRereadNeeded(hwnd);
+
+  //display the file name
+  char buf[1000];
+  sprintf(buf, "%s - logfile at: %s", PROG_DESC_LONG, ofn.lpstrFile); 
+  SetWindowText(hwnd, buf);
 }
 
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void Main_CmAbout(HWND hwnd)
 {
   const char *buffer =

@@ -91,6 +91,7 @@ protected:
   time_t rangestart, rangeend;
   HANDLE hLogThread;
 
+
   // current graphing state.
   LoggerState loggerstate;
 
@@ -109,7 +110,7 @@ public:
   ~MyGraphWindow(void);
 
   // window repainting.
-  int DoRedraw(HDC dc, RECT clientrect);
+  int	DoRedraw(HDC dc, RECT clientrect, HWND hwnd);
 
   // public interface methods.
   void LogRereadNeeded(HWND hwnd);

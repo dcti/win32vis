@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.3 1999/09/10 09:59:09 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.4 1999/12/08 08:09:48 jlawson Exp $";
 #endif
 
 
@@ -343,7 +343,7 @@ void MyGraphWindow::IterDrawFuncRate(MyGraphEntry &datapoint, void *vptr)
 /////////////////////////////////////////////////////////////////////////////
 
 // Window repaint handler, called in response to WM_PAINT handling.
-int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
+int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect, HWND hwnd)
 {
   RECT graphrect;
   TEXTMETRIC tmet;
@@ -358,37 +358,29 @@ int	MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 
   if (loggerstate == loadinprogress)
   {
-    HGDIOBJ oldfont = SelectObject(dc, GetStockObject(ANSI_VAR_FONT));
-    DrawText(dc, "Please wait, currently reloading log file.",
-        -1, &graphrect, DT_CENTER | DT_VCENTER | DT_WORDBREAK);
-    SelectObject(dc, oldfont);
+    SendMessage(hwnd, SB_SETTEXT, 0, (LPARAM)
+        "Please wait, currently reloading log file.");
     return TRUE;
   }
   else if (loggerstate == lognotfound)
   {
-    HGDIOBJ oldfont = SelectObject(dc, GetStockObject(ANSI_VAR_FONT));
-    DrawText(dc, "Could not load any data for graphing.  This may "
-        "indicate that there was a problem opening the log file.",
-        -1, &graphrect, DT_CENTER | DT_VCENTER | DT_WORDBREAK);
-    SelectObject(dc, oldfont);
+    SendMessage(hwnd, SB_SETTEXT,
+              0, (LPARAM) "Could not load any data for graphing.  This may "
+        "indicate that there was a problem opening the log file.");
     return TRUE;
   }
   else if (loggerstate == nologloaded)
   {
-    HGDIOBJ oldfont = SelectObject(dc, GetStockObject(ANSI_VAR_FONT));
-    DrawText(dc, "You must specify a log file to be used for graph visualization.",
-        -1, &graphrect, DT_CENTER | DT_VCENTER | DT_WORDBREAK);
-    SelectObject(dc, oldfont);
+    SendMessage(hwnd, SB_SETTEXT, 0, (LPARAM)
+        "You must specify a log file to be used for graph visualization.");
     return TRUE;
   }
   else if (logdata.IsEmpty() || minrate == maxrate || mintime == maxtime)
   {
-    HGDIOBJ oldfont = SelectObject(dc, GetStockObject(ANSI_VAR_FONT));
-    DrawText(dc, "Could not load any data for graphing.  This may "
+    SendMessage(hwnd, SB_SETTEXT, 0, (LPARAM)
+      "Could not load any data for graphing.  This may "
         "indicate that there was no graphable data inside of the "
-        "specified log file",
-        -1, &graphrect, DT_CENTER | DT_VCENTER | DT_WORDBREAK);
-    SelectObject(dc, oldfont);
+        "specified log file");
     return TRUE;
   }
 

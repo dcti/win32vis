@@ -6,6 +6,8 @@
 #define IDM_EXIT                        100
 #define IDM_ABOUT                       101
 #define IDM_OPENLOGFILE                 102
+#define IDM_REFRESHLOGFILE              103
+#define IDM_GRAPHCONFIG                 104
 #define IDI_ICON_MAIN                   200
 #define IDM_MENU1                       215
 #define IDD_GRAPHCFG                    261
@@ -22,7 +24,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
-#define _APS_NEXT_COMMAND_VALUE         40002
+#define _APS_NEXT_COMMAND_VALUE         40003
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
