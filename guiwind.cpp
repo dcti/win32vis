@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.7 1999/12/08 09:36:55 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.8 1999/12/08 09:54:09 jlawson Exp $";
 #endif
 
 
@@ -61,12 +61,28 @@ LRESULT CALLBACK Main_WindowProc(
       CreateStatusWindow((SBARS_SIZEGRIP | WS_CHILD | WS_VISIBLE),
           "Ready", hwnd, IDC_STATUSBAR);
 
+      // Accept drag-and-dropped files.
+      DragAcceptFiles(hwnd, TRUE);
+
       return result;
     }
 
     case WM_DESTROY:
       PostQuitMessage(0);
-      break;      
+      break;
+
+    case WM_DROPFILES:
+    {
+      // get the filename of the dropped item.
+      DragQueryFile((HDROP) wParam, 0,
+          __currentlogfilename, sizeof(__currentlogfilename));
+      DragFinish((HDROP) wParam);
+          
+      // trigger the reload to occur in the background.
+      graphwin.LogRereadNeeded(hwnd);
+      Main_UpdateTitlebar(hwnd);
+      break;
+    }
 
     case WM_INITMENU:
     {
