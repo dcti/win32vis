@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.7 2001/01/15 08:25:05 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.8 2001/01/18 00:54:55 jlawson Exp $";
 #endif
 
 
@@ -202,7 +202,14 @@ void MyGraphWindow::ReadLogData(void)
             gecontest = __ParseContest(completedptr + 10);
             if (gecontest == CONTEST_UNKNOWN) {
               if (strncmp(completedptr + 10, "block", 5) == 0) {
+                // some very old clients did not indicate contest ("Completed block")
                 gecontest = CONTEST_RC5;
+              } else if (strncmp(completedptr + 10, "one", 3) == 0) {
+                // some old RC5DES clients indicated "Completed one xxx block".
+                gecontest = __ParseContest(completedptr + 14);
+                if (gecontest == CONTEST_UNKNOWN) {
+                  continue;
+                }
               } else {
                 continue;
               }
