@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.5 1999/12/08 09:36:55 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.6 1999/12/31 23:31:10 jlawson Exp $";
 #endif
 
 
@@ -75,7 +75,10 @@ int WINAPI WinMain(
   // Run the message loop.
   MSG msg;
   while (GetMessage(&msg, NULL, NULL, NULL) == TRUE)
+  {
+    TranslateMessage(&msg);
     DispatchMessage(&msg);
+  }
 
 
   return 0;
