@@ -1,5 +1,4 @@
 # distributed.net Win32 Log Visualizer makefile (MS Visual C++ for Win32 x86)
-# feel free to generalize to do Win32 Alpha as well
 # see http://www.distributed.net/
 
 EXENAME = logvis.exe
