@@ -1,11 +1,11 @@
-// Copyright distributed.net 1997-1999 - All Rights Reserved
+// Copyright distributed.net 1997-2004 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiconfig.cpp,v 1.5 2002/12/31 04:21:34 sdodson Exp $";
+static char *id="@(#)$Id: guiconfig.cpp,v 1.6 2004/07/04 07:38:52 jlawson Exp $";
 #endif
 
 
@@ -55,7 +55,7 @@ static void SetDlgItemGMT(HWND hwndParent, int nID, time_t timestamp)
   {
     struct tm *gmt = gmtime(&timestamp);
     if (gmt)
-      strftime(buffer, sizeof(buffer), "%b %d %H:%M", gmt);
+      strftime(buffer, sizeof(buffer), "%Y-%b-%d %H:%M", gmt);
     else
       buffer[0] = 0;
   }
