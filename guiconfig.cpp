@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiconfig.cpp,v 1.3 1999/09/14 09:01:06 jlawson Exp $";
+static char *id="@(#)$Id: guiconfig.cpp,v 1.4 1999/09/15 10:24:34 jlawson Exp $";
 #endif
 
 
@@ -49,6 +49,32 @@ static void SetDlgItemGMT(HWND hwndParent, int nID, time_t timestamp)
       buffer[0] = 0;
   }
   SetDlgItemText(hwndParent, nID, buffer);
+}
+
+static void CenterWindow(HWND hwndDlg)
+{
+  WINDOWPLACEMENT ourplace, parentplace;
+
+  // center the dialog within our parent.  
+  ourplace.length = sizeof(WINDOWPLACEMENT);
+  parentplace.length = sizeof(WINDOWPLACEMENT);
+  GetWindowPlacement(hwndDlg, &ourplace);
+  GetWindowPlacement(GetParent(hwndDlg), &parentplace);
+
+  int parentw = (parentplace.rcNormalPosition.right - parentplace.rcNormalPosition.left);
+  int parenth = (parentplace.rcNormalPosition.bottom - parentplace.rcNormalPosition.top);
+  int ourw = (ourplace.rcNormalPosition.right - ourplace.rcNormalPosition.left);
+  int ourh = (ourplace.rcNormalPosition.bottom - ourplace.rcNormalPosition.top);
+
+  int newx = (parentw > ourw ? (parentw - ourw) / 2 : 0);
+  int newy = (parenth > ourh ? (parenth - ourh) / 2 : 0);
+
+  SetRect(&ourplace.rcNormalPosition,
+      parentplace.rcNormalPosition.left + newx,
+      parentplace.rcNormalPosition.top + newy,
+      parentplace.rcNormalPosition.left + newx + ourw,
+      parentplace.rcNormalPosition.top + newy + ourh);
+  SetWindowPlacement(hwndDlg, &ourplace);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -98,6 +124,9 @@ BOOL CALLBACK MyGraphConfig::DialogProc(
 #pragma argsused
 int MyGraphConfig::OnInitDialog(HWND hwndDlg, HWND hWndFocus, LPARAM lParam)
 {
+  // center the dialog inside our parent.
+  CenterWindow(hwndDlg);  
+  
   // attach the range slider to the control
   HWND rangeslider = GetDlgItem(hwndDlg, IDC_SLIDERRANGE);
 
@@ -109,7 +138,6 @@ int MyGraphConfig::OnInitDialog(HWND hwndDlg, HWND hWndFocus, LPARAM lParam)
     endtime = (time_t) -1;
   if (endtime != (time_t) -1 && starttime != (time_t) -1 && endtime < starttime)
     endtime = (time_t) -1;
-
 
   // combo start box
   HWND combostart = GetDlgItem(hwndDlg, IDC_COMBOSTART);
