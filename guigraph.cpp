@@ -1,11 +1,11 @@
-// Copyright distributed.net 1997-2001 - All Rights Reserved
+// Copyright distributed.net 1997-2004 - All Rights Reserved
 // For use in distributed.net projects only.
 // Any other distribution or use of this source violates copyright.
 
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.11 2002/12/31 04:21:34 sdodson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.12 2004/07/04 07:42:23 jlawson Exp $";
 #endif
 
 
@@ -111,11 +111,12 @@ static double __ParseDuration(const char *stamp)
 static MyGraphWindow::contest_t __ParseContest(const char *stamp)
 {
   //MessageBox(NULL, stamp, NULL, MB_OK | MB_ICONERROR);
-  if (strncmp(stamp, "RC5", 3) == 0) return MyGraphWindow::CONTEST_RC5;
+  if (strncmp(stamp, "RC5-72", 6) == 0) return MyGraphWindow::CONTEST_RC5_72;
+  else if (strncmp(stamp, "RC5", 3) == 0) return MyGraphWindow::CONTEST_RC5;
   else if (strncmp(stamp, "DES", 3) == 0) return MyGraphWindow::CONTEST_DES;
   else if (strncmp(stamp, "CSC", 3) == 0) return MyGraphWindow::CONTEST_CSC;
+  else if (strncmp(stamp, "OGR-P2", 6) == 0) return MyGraphWindow::CONTEST_OGR_P2;
   else if (strncmp(stamp, "OGR", 3) == 0) return MyGraphWindow::CONTEST_OGR;
-  else if (strncmp(stamp, "-72", 3) == 0) return MyGraphWindow::CONTEST_RC5_72;
   else return MyGraphWindow::CONTEST_UNKNOWN;
 }
 
@@ -207,7 +208,12 @@ void MyGraphWindow::ReadLogData(void)
           char compprech = *(completedptr - 2);
           if (compprech == ':') {
             bKeycountOrStatUnits = false;       // stat units.
-            gecontest = __ParseContest(completedptr - 5);
+            for (char *constart = completedptr - 3; ; constart--) {
+              if (constart < linebuffer || *constart == ' ') {
+                gecontest = __ParseContest(constart + 1);
+                break;
+              }
+            }
             if (gecontest == CONTEST_UNKNOWN) continue;
           } else if (compprech == ']') {
             bKeycountOrStatUnits = true;        // keycount.
@@ -364,7 +370,7 @@ const char *MyGraphWindow::GetStatusString(void)
   bStateChanged = false;
   if (loggerstate == loadinprogress)
   {
-    return "Please wait, currently reloading log file.";
+    return "Please wait, currently reloading log file...";
   }
   else if (loggerstate == lognotfound)
   {
@@ -546,7 +552,11 @@ void MyPaintHelper::DrawAxisLabelsAndTicks(void)
 
     // draw the text
     char buffer[30];
+#ifdef HAVE_SNPRINTF
+    _snprintf(buffer, sizeof(buffer), "%.1f", y / 1000.0);
+#else
     sprintf(buffer, "%.1f", y / 1000.0);
+#endif
     RECT rect = {0, point.y - tmet.tmHeight,
         point.x - 6, point.y + tmet.tmHeight};
     DrawText(dc, buffer, -1, &rect, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
@@ -563,7 +573,7 @@ void MyPaintHelper::DrawAxisLabelsAndTicks(void)
     // draw the text
     char buffer[30];
     struct tm *gmt = gmtime(&x);
-    strftime(buffer, sizeof(buffer), "%b %d\n%H:%M", gmt);
+    strftime(buffer, sizeof(buffer), "%Y\n%b %d\n%H:%M", gmt);
     RECT rect = {point.x - tmet.tmAveCharWidth * 10, point.y + 6,
         point.x + tmet.tmAveCharWidth * 10, point.y + 6 + 3 * tmet.tmHeight};
     DrawText(dc, buffer, -1, &rect, DT_CENTER);
@@ -589,7 +599,9 @@ void MyPaintHelper::DisplayXAxisLabelDescription(const char *xlabel, const RECT 
 
 void MyPaintHelper::DisplayYAxisLabelDescription(const char *ylabel, const RECT &clientrect)
 {
-  HFONT rotatedfont = CreateFont(tmet.tmHeight, 0, 900, 900,
+  // The rotated font size is at 9/10th normal size to compensate
+  // for the perceived size increase on rotated fonts.
+  HFONT rotatedfont = CreateFont(tmet.tmHeight * 9/10, 0, 900, 900,
       FW_DONTCARE, false, false, false, DEFAULT_CHARSET,
       OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
       DEFAULT_PITCH | FF_DONTCARE, "Arial");
@@ -610,17 +622,30 @@ void MyPaintHelper::DisplayYAxisLabelDescription(const char *ylabel, const RECT 
 // Window repaint handler, called in response to WM_PAINT handling.
 int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
 {
-  RECT graphrect;
+  // select the font that we'll use and get the dimensions
+#if defined(DEFAULT_GUI_FONT)
+  HGDIOBJ oldfont = SelectObject(dc, GetStockObject(DEFAULT_GUI_FONT));
+#else
+  HGDIOBJ oldfont = SelectObject(dc, GetStockObject(ANSI_VAR_FONT));
+#endif
+
+
+  TEXTMETRIC tmet;
+  GetTextMetrics(dc, &tmet);
 
   // compute size of the rectangles
-  graphrect.left = clientrect.left + 55;
+  RECT graphrect;
+  graphrect.left = clientrect.left + tmet.tmHeight * 2 + tmet.tmAveCharWidth * 8;  // room on left for y-axis label and y-axis tickmarks
   graphrect.top = clientrect.top + 10;
   graphrect.right = clientrect.right - 20;
-  graphrect.bottom = clientrect.bottom - 45;
-  if (graphrect.right <= graphrect.left ||
-    graphrect.bottom <= graphrect.top) return TRUE;
+  graphrect.bottom = clientrect.bottom - tmet.tmHeight * 5;   // room on bottom for x-axis label and x-axis tick marks
+  if (graphrect.right <= graphrect.left || graphrect.bottom <= graphrect.top) {
+     SelectObject(dc, oldfont);
+     return TRUE;
+  }
 
   if (loggerstate != logloaded) {
+    SelectObject(dc, oldfont);
     return TRUE;
   }
 
@@ -636,13 +661,6 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   time_t timehi = (rangeend == (time_t) -1 ? maxtime : rangeend);
   if (timehi <= timelo) return TRUE;
 
-
-  // select the font that we'll use and get the dimensions
-#if defined(DEFAULT_GUI_FONT)
-  HGDIOBJ oldfont = SelectObject(dc, GetStockObject(DEFAULT_GUI_FONT));
-#else
-  HGDIOBJ oldfont = SelectObject(dc, GetStockObject(ANSI_VAR_FONT));
-#endif
 
 
   // set up the graphing window structure and scaling
@@ -703,6 +721,7 @@ UINT MyGraphWindow::GetViewedContestMenuId(void) const
     case CONTEST_DES: return IDM_CONTEST_DES;
     case CONTEST_CSC: return IDM_CONTEST_CSC;
     case CONTEST_OGR: return IDM_CONTEST_OGR;
+    case CONTEST_OGR_P2: return IDM_CONTEST_OGR_P2;
   }
   return 0;
 }
@@ -715,6 +734,7 @@ bool MyGraphWindow::SetViewedContestByMenuId(UINT menuid)
     case IDM_CONTEST_DES: viewedcontest = CONTEST_DES; return true;
     case IDM_CONTEST_CSC: viewedcontest = CONTEST_CSC; return true;
     case IDM_CONTEST_OGR: viewedcontest = CONTEST_OGR; return true;
+    case IDM_CONTEST_OGR_P2: viewedcontest = CONTEST_OGR_P2; return true;
   }
   return false;
 }
