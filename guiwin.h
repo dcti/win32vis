@@ -104,6 +104,7 @@ public:
     CONTEST_CSC, 
     CONTEST_OGR,
     CONTEST_OGR_P2,
+    CONTEST_NEXTUNUSED    // this entry must be last.
   };
 
 protected:
@@ -120,6 +121,7 @@ protected:
   time_t mintime, maxtime;
   double minrate, maxrate;
   double totalkeys;
+  bool haveprojectdata[CONTEST_NEXTUNUSED];
 
   // user configurable options.
   time_t rangestart, rangeend;
@@ -162,6 +164,8 @@ public:
   bool IsDataAvailable(void) const
     { return loggerstate == logloaded && !logdata.empty() &&
           minrate != maxrate && mintime != maxtime; }
+  bool IsDataAvailable(contest_t project) const
+    { return (loggerstate == logloaded || loggerstate == loginvalid) && haveprojectdata[project]; }
 
   // public interface methods.
   // also resets the status changed tracker.

@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.13 2004/07/04 08:38:51 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.14 2004/07/04 11:46:15 jlawson Exp $";
 #endif
 
 
@@ -35,7 +35,9 @@ MyGraphWindow::~MyGraphWindow(void)
   if (hLogThread != NULL &&
       hLogThread != INVALID_HANDLE_VALUE)
   {
-    WaitForSingleObject(hLogThread, INFINITE);
+    if (WaitForSingleObject(hLogThread, 15*1000) == WAIT_OBJECT_0) {
+      TerminateThread(hLogThread, 0);
+    }
     CloseHandle(hLogThread);
   }
   DeleteCriticalSection(&loggerbusy);
@@ -153,7 +155,9 @@ static MyGraphWindow::contest_t __ParseContest(const char *stamp)
 //  ---
 //   [Dec 22 09:07:32 UTC] RC5-72: Completed CA:407B9B7F:00000000 (1.00 stats units)
 //                         0.01:25:53.63 - [833,398 keys/s]
-
+//  ---
+//   [Jul 04 09:42:34 UTC] OGR-P2: Completed 25/1-27-20-11-5-14 (38.59 stats units)
+//                         0.00:59:05.85 - [10,884,020 nodes/s]
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -166,11 +170,17 @@ void MyGraphWindow::ReadLogData(void)
 {
   EnterCriticalSection(&loggerbusy);
 
+  loggerstate = loadinprogress;
+  bStateChanged = true;
+
   // reset storage.
   logdata.erase(logdata.begin(), logdata.end());
   mintime = maxtime = 0;
   minrate = maxrate = 0;
   totalkeys = 0;
+  for (int ii = 0; ii < CONTEST_NEXTUNUSED; ii++) {
+    haveprojectdata[ii] = false;
+  }
 
   // open up the log.
   FILE *fp = fopen(LogGetCurrentLogFilename(), "rt");
@@ -180,20 +190,21 @@ void MyGraphWindow::ReadLogData(void)
     bool gotfirst = false;
     char linebuffer[500];
     time_t lasttimestamp = 0, timestampadd = 0;
-    while (!feof(fp))
+    while (!feof(fp) && fgets(linebuffer, sizeof(linebuffer), fp) != NULL)
     {
       // parse the line
-      if (!fgets(linebuffer, sizeof(linebuffer), fp)) break;
       if (linebuffer[0] == '[')
       {
         char *completedptr = strstr(linebuffer, "Completed ");
         if (completedptr != NULL)
         {
           MyGraphEntry ge;
-          contest_t gecontest;
+          contest_t gecontest = CONTEST_UNKNOWN;
           bool bKeycountOrStatUnits;    // true=keycount, false=statunits.
 
           // parse timestamp from first line.
+          // Unfortunately the log timestamps are all missing years, so
+          // we just make a guess at what year things actually happened.
           ge.timestamp = __ParseTimestamp(linebuffer + 1);
           if (ge.timestamp == 0) continue;
           if (lasttimestamp != 0)
@@ -211,6 +222,7 @@ void MyGraphWindow::ReadLogData(void)
           // parse the project type from the first line.
           char compprech = *(completedptr - 2);
           if (compprech == ':') {
+            // project name comes before colon, ie: "PRJ: Completed"
             bKeycountOrStatUnits = false;       // stat units.
             for (char *constart = completedptr - 3; ; constart--) {
               if (constart < linebuffer || *constart == ' ') {
@@ -218,8 +230,8 @@ void MyGraphWindow::ReadLogData(void)
                 break;
               }
             }
-            if (gecontest == CONTEST_UNKNOWN) continue;
           } else if (compprech == ']') {
+            // very old format.
             bKeycountOrStatUnits = true;        // keycount.
             gecontest = __ParseContest(completedptr + 10);
             if (gecontest == CONTEST_UNKNOWN) {
@@ -229,17 +241,11 @@ void MyGraphWindow::ReadLogData(void)
               } else if (strncmp(completedptr + 10, "one", 3) == 0) {
                 // some old RC5DES clients indicated "Completed one xxx block".
                 gecontest = __ParseContest(completedptr + 14);
-                if (gecontest == CONTEST_UNKNOWN) {
-                  continue;
-                }
-              } else {
-                continue;
               }
             }
-          } else {
-            continue;
           }
-          if (gecontest != viewedcontest) {
+          haveprojectdata[gecontest] = true;
+          if (gecontest == CONTEST_UNKNOWN || gecontest != viewedcontest) {
             // ignore blocks for contests that are not currently being viewed.
             continue;
           }
@@ -247,12 +253,23 @@ void MyGraphWindow::ReadLogData(void)
           // parse the keycount from the first line.
           char *p = strchr(linebuffer, '(');
           if (p != NULL) {
-            if (!bKeycountOrStatUnits || gecontest == CONTEST_OGR) {
+            if (!bKeycountOrStatUnits || strstr(p, "stats units") != NULL) {
               // reported count is already in "stats units" format.
-              ge.statunits = (double) atol(p + 1);
+              ge.statunits = (double) atof(p + 1);
+            } else if (strchr(p, '*') != NULL) {
+              // old style: reported count is like "32*2^28 keys"
+              ge.statunits = (double) atoi(p + 1);
+            } else if (strstr(p, "nodes") != NULL) {
+              // old style: reported count is like "9,743,881,734 nodes"
+              while (strchr(p,',') != NULL) // get rid of commas
+              {
+                char *s=strchr(p,',');
+                memmove(s, s+1, strlen(s));
+              }
+              ge.statunits = ((double) atof(p)) / 1e9;   // 1 billion nodes per stats unit.
             } else {
-              // reported count is in keycounts, so divide by the workunit size (2**28).
-              ge.statunits = ((double) atol(p + 1)) / 268435456.0;
+              // old style: reported count is in keycounts, so divide by the workunit size (2**28).
+              ge.statunits = ((double) atof(p + 1)) / 268435456.0;
             }
           } else {
             continue;
@@ -267,7 +284,7 @@ void MyGraphWindow::ReadLogData(void)
           while (strchr(q+1,',') != NULL) // get rid of commas
           {
             char *s=strchr(q+1,',');
-            strcpy(s,s+1);      // assume strcpy always copies forward.
+            memmove(s, s+1, strlen(s));
           }
           ge.rate = atof(q + 1);
 
@@ -330,8 +347,22 @@ long MyGraphWindow::LogParseThread(long lParam)
 {
   threadstruct *ts = (threadstruct*) lParam;
 
-  ts->that->ReadLogData();
+  // set the mouse cursor to busy.
+  HCURSOR waitcursor = LoadCursor(NULL, IDC_WAIT);
+  HCURSOR oldcursor = SetCursor(waitcursor);
   InvalidateRect(ts->hwnd, NULL, TRUE);
+
+  // load the log file.
+  ts->that->ReadLogData();
+
+  // queue the update events.
+  InvalidateRect(ts->hwnd, NULL, TRUE);
+  //PostMessage(ts->hwnd, WM_INITMENU, (WPARAM) GetMenu(ts->hwnd), 0);
+
+  // restore the mouse cursor.
+  SetCursor(oldcursor);
+  DestroyCursor(waitcursor);
+
   delete ts;
   return 0;
 }
@@ -361,7 +392,7 @@ void MyGraphWindow::LogRereadNeeded(HWND hwnd)
       (LPVOID) ts, 0, &threadid);
   if (!hLogThread)
   {
-    MessageBox(NULL, "Failed to create log parsing thread.",
+    MessageBox(hwnd, "Failed to create log parsing thread.",
         NULL, MB_ICONERROR | MB_OK);
     delete ts;
   }
@@ -383,9 +414,15 @@ const char *MyGraphWindow::GetStatusString(void)
   case nologloaded:
     return "You must specify a log file to be used for graph visualization.";
   case loginvalid:
-    return "Could not load any data for graphing.  This may "
-        "indicate that there was no graphable data inside of the "
-        "specified log file.";
+    {
+      for (int ii = 1; ii < CONTEST_NEXTUNUSED; ii++) {
+        if (ii != viewedcontest && haveprojectdata[ii]) 
+          return "Could not load any data for graphing.  Pick another project to view.";
+      }
+      return "Could not load any data for graphing.  This may "
+          "indicate that there was no graphable data inside of the "
+          "specified log file.";
+    }
   case logloaded:
     return "Log file successfully loaded.";
   default:
@@ -627,6 +664,9 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
     return TRUE;
   }
 
+  HCURSOR waitcursor = LoadCursor(NULL, IDC_WAIT);
+  HCURSOR oldcursor = SetCursor(waitcursor);
+
   // select the font that we'll use and get the dimensions
 #if defined(DEFAULT_GUI_FONT)
   HGDIOBJ oldfont = SelectObject(dc, GetStockObject(DEFAULT_GUI_FONT));
@@ -645,13 +685,17 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   graphrect.right = clientrect.right - 20;
   graphrect.bottom = clientrect.bottom - tmet.tmHeight * 5;   // room on bottom for x-axis label and x-axis tick marks
   if (graphrect.right <= graphrect.left || graphrect.bottom <= graphrect.top) {
-     SelectObject(dc, oldfont);
-     LeaveCriticalSection(&loggerbusy);
-     return TRUE;
+    SelectObject(dc, oldfont);
+    SetCursor(oldcursor);
+    DestroyCursor(waitcursor);
+    LeaveCriticalSection(&loggerbusy);
+    return TRUE;
   }
 
   if (loggerstate != logloaded) {
     SelectObject(dc, oldfont);
+    SetCursor(oldcursor);
+    DestroyCursor(waitcursor);
     LeaveCriticalSection(&loggerbusy);
     return TRUE;
   }
@@ -659,6 +703,9 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   if (logdata.empty() || minrate == maxrate || mintime == maxtime) {
     bStateChanged = true;
     loggerstate = loginvalid;
+    SelectObject(dc, oldfont);
+    SetCursor(oldcursor);
+    DestroyCursor(waitcursor);
     LeaveCriticalSection(&loggerbusy);
     return TRUE;
   }
@@ -667,7 +714,13 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
   // determine the range window that we will draw
   time_t timelo = (rangestart == (time_t) -1 ? mintime : rangestart);
   time_t timehi = (rangeend == (time_t) -1 ? maxtime : rangeend);
-  if (timehi <= timelo) return TRUE;
+  if (timehi <= timelo) {
+    SelectObject(dc, oldfont);
+    SetCursor(oldcursor);
+    DestroyCursor(waitcursor);
+    LeaveCriticalSection(&loggerbusy);
+    return TRUE;
+  }
 
 
 
@@ -714,6 +767,8 @@ int MyGraphWindow::DoRedraw(HDC dc, RECT clientrect)
                   "Work Unit noderate (nodes/sec)" :
                   "Work Unit keyrate (kkeys/sec)"), clientrect);
 
+  SetCursor(oldcursor);
+  DestroyCursor(waitcursor);
   LeaveCriticalSection(&loggerbusy);
   return FALSE;
 }

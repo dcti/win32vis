@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.17 2004/07/04 08:38:00 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.18 2004/07/04 11:46:15 jlawson Exp $";
 #endif
 
 
@@ -87,19 +87,20 @@ LRESULT CALLBACK Main_WindowProc(
 
     case WM_INITMENU:
     {
+      // This event is triggered each time just before a menu is going to be displayed.
       HMENU hPopup = (HMENU) wParam;
 
       // Enable or disable the menu items that are not valid without a logfile.
-      DWORD dwEnabledWithLogAndData = (graphwin.GetStatusValue() == MyGraphWindow::logloaded ? MF_ENABLED : MF_GRAYED);
+      DWORD dwEnabledWithLogAndData = (graphwin.IsDataAvailable() ? MF_ENABLED : MF_GRAYED);
       DWORD dwEnabledWithLog = (graphwin.GetStatusValue() != MyGraphWindow::nologloaded ? MF_ENABLED : MF_GRAYED);
       EnableMenuItem(hPopup, IDM_REFRESHLOGFILE, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_GRAPHCONFIG, MF_BYCOMMAND | dwEnabledWithLogAndData);
-      EnableMenuItem(hPopup, IDM_CONTEST_RC5, MF_BYCOMMAND | dwEnabledWithLog);
-      EnableMenuItem(hPopup, IDM_CONTEST_RC5_72, MF_BYCOMMAND | dwEnabledWithLog);
-      EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | dwEnabledWithLog);
-      EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | dwEnabledWithLog);
-      EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | dwEnabledWithLog);
-      EnableMenuItem(hPopup, IDM_CONTEST_OGR_P2, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_CONTEST_RC5, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_RC5) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_CONTEST_RC5_72, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_RC5_72) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_DES) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_CSC) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_OGR) ? MF_ENABLED : MF_GRAYED));
+      EnableMenuItem(hPopup, IDM_CONTEST_OGR_P2, MF_BYCOMMAND | (graphwin.IsDataAvailable(MyGraphWindow::CONTEST_OGR_P2) ? MF_ENABLED : MF_GRAYED));
       EnableMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND | dwEnabledWithLogAndData);
 
       // Enable the "full zoom" menu item only when there is data and zoomed in.
