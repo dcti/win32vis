@@ -14,6 +14,7 @@
 #define IDC_SLIDERRANGE                 525
 #define IDS_ENDDATE                     526
 #define IDS_STARTDATE                   527
+#define IDC_STATUSBAR                   600
 
 // Next default values for new objects
 // 

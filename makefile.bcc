@@ -2,7 +2,6 @@
 # feel free to generalize to do Win32 Alpha as well
 # see http://www.distributed.net/
 
-VWCL_PATH = c:\bc5\vwcl
 EXENAMEG = ../../logvis.exe
 OUTPUTPATH = ../../output
 COMMONPATH = ../../common
@@ -15,7 +14,7 @@ LOGVIS = .
 # --------------------------------------------
 
 BCCOPTS = /a4 /Vv /x- /xd- /RT- /r /k- /d /w /O2 /O /OS \
-  /I$(COMMONPATH) /I$(VWCL_PATH) /D_CPU_32BIT_ /DMULTITHREAD /tWM
+  /I$(COMMONPATH) /D_CPU_32BIT_ /DMULTITHREAD /tWM
 
 TLINKOPTS = /aa /x /Tpe /n /B:0x400000
 
@@ -30,7 +29,7 @@ BCCOPTS = $(BCCOPTS) /DNDEBUG
 
 # --------------------------------------------
 
-.path.cpp = $(COMMONPATH);$(VWCL_PATH);$(LOGVIS)
+.path.cpp = $(COMMONPATH);$(LOGVIS)
 .path.obj = $(OUTPUTPATH)
 .path.res = $(OUTPUTPATH)
 .path.rc = $(LOGVIS)
@@ -41,7 +40,6 @@ GUI_OBJS =                    \
         $(OUTPUTPATH)/guiapp.obj     \
         $(OUTPUTPATH)/guigraph.obj   \
         $(OUTPUTPATH)/guiwind.obj    \
-        $(OUTPUTPATH)/vWindowAppCore.obj
 
 GUI_RES = $(OUTPUTPATH)/guiwin.res
 

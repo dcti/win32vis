@@ -6,15 +6,16 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.1 1999/09/07 18:46:09 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.2 1999/09/09 09:02:10 jlawson Exp $";
 #endif
 
 
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
+MyGraphWindow graphwin;
 static char __currentlogfilename[200] = {0};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 const char *LogGetCurrentLogFilename(void)
 {
@@ -25,105 +26,124 @@ const char *LogGetCurrentLogFilename(void)
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-BOOL MyClientWindow::PreCreateWindow(LPCREATESTRUCT cs)
+LRESULT CALLBACK Main_WindowProc(
+    HWND  hwnd,	// handle of window
+    UINT  uMsg,	// message identifier
+    WPARAM  wParam,	// first message parameter
+    LPARAM  lParam 	// second message parameter
+   )
 {
-  // set default window dimensions
-  cs->cx = 620;
-  cs->cy = 370;
-  return VMainWindow::PreCreateWindow(cs);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-BOOL MyClientWindow::PostCreateWindow()
-{
-  AutoMenuEnable(TRUE);
-
-  // create the child window
-  graphwin.Create(GetSafeWindow());
-  graphwin.ClientInitDone();
-
-  // allow the default initializer do its work too
-  return VMainWindow::PostCreateWindow();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-void MyClientWindow::RecalcLayout(LPRECT lpRect)
-{
-  graphwin.MoveWindow(lpRect);
-  VMainWindow::RecalcLayout(lpRect);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-LRESULT MyClientWindow::WindowProc(HWND hWnd, UINT nMessage,
-    WPARAM wParam, LPARAM lParam)
-{
-  // Be on the lookout for message(s) we need to know about
-  switch ( nMessage )
+  switch (uMsg)
   {
-    case WM_MENUSELECT:
-      // don't let vMainWindow process this or it'll change the status bar
-      return FALSE;
+    case WM_CREATE:
+    {
+      // Allow normal window creation to finish.
+      LRESULT result = DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+      // Create the status window.
+      CreateStatusWindow((SBARS_SIZEGRIP | WS_CHILD | WS_VISIBLE),
+          "Ready", hwnd, IDC_STATUSBAR);
+
+      return result;
+    }
+
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      break;      
+
+//
+//SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), SB_SETTEXT, 0, "Blah");
 
     case WM_INITMENU:
-      OnInitMenu((HMENU)wParam);
       break;
+
+    case WM_SIZE:
+      SendMessage(GetDlgItem(hwnd, IDC_STATUSBAR), WM_SIZE, wParam, lParam);
+      InvalidateRect(hwnd, NULL, TRUE);
+      break;
+
+    case WM_PAINT:
+    {
+      PAINTSTRUCT m_ps;
+      RECT clientrect, statusrect;
+      int savedcontext;
+
+      if (BeginPaint(hwnd, &m_ps))
+      {      
+        if ((savedcontext = SaveDC(m_ps.hdc)) != 0)
+        {
+          GetClientRect(hwnd, &clientrect);
+          GetClientRect(GetDlgItem(hwnd, IDC_STATUSBAR), &statusrect);
+          clientrect.bottom -= (statusrect.bottom - statusrect.top);
+          clientrect.left += GetSystemMetrics(SM_CXFRAME);
+          clientrect.right -= GetSystemMetrics(SM_CXFRAME);
+          graphwin.DoRedraw(m_ps.hdc, clientrect);
+        }
+        RestoreDC(m_ps.hdc, savedcontext);
+        EndPaint(hwnd, &m_ps);
+      }
+      return FALSE;
+    }
+
+    case WM_COMMAND:
+    {
+      WORD wNotifyCode = HIWORD(wParam); // notification code 
+      WORD wID = LOWORD(wParam);         // control identifier 
+      
+      if (wNotifyCode == 0)
+      {
+        if (wID == IDM_EXIT)
+        {
+          PostMessage(hwnd, WM_CLOSE, 0, 0);
+          return FALSE;
+        }
+        else if (wID == IDM_ABOUT)
+        {
+          Main_CmAbout(hwnd);
+          return FALSE;
+        }
+        else if (wID == IDM_OPENLOGFILE)
+        {
+          Main_CmOpenLogfile(hwnd);
+          return FALSE;
+        }
+      }
+      break;
+    }
+
+#if 0
+    case WM_RBUTTONDOWN:
+    {
+      // require that a logfile is already loaded.
+      if (loggerstate == logloaded && logdata.IsEmpty() &&
+          minrate != maxrate && mintime != maxtime)
+      {      
+        // bring up the configuration dialog
+        MyGraphConfig config;
+        config.datastart = mintime;
+        config.dataend = maxtime;
+        config.starttime = rangestart;
+        config.endtime = rangeend;
+        config.DoModal(GetSafeWindow());
+        rangestart = config.starttime;
+        rangeend = config.endtime;
+
+        // force a redraw
+        Refresh();
+      }
+      return FALSE;
+    }
+#endif
+
   }
-  return VMainWindow::WindowProc(hWnd, nMessage, wParam, lParam);
+  return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#pragma argsused
-void MyClientWindow::OnInitMenu(HMENU hMenu)
-{
-  // we would enable or disable menu items just before the menu pops up here.
-}
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-int MyClientWindow::OnCommand(WORD wNotifyCode, WORD wID, HWND hWndControl)
-{
-  if (wNotifyCode != 0)
-  {
-    return VMainWindow::OnCommand(wNotifyCode, wID, hWndControl);
-  }
-  if (wID == IDM_EXIT)
-  {
-    PostMessage(WM_CLOSE, 0, 0);
-  }
-  else if (wID == IDM_ABOUT)
-  {
-    CmAbout();
-  }
-  else if (wID == IDM_OPENLOGFILE)
-  {
-    CmOpenLogfile();
-  }
-  else
-  {
-    return VMainWindow::OnCommand(wNotifyCode, wID, hWndControl);
-  }
-  return FALSE;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-void MyClientWindow::CmOpenLogfile(void)
+void Main_CmOpenLogfile(HWND hwnd)
 {
   OPENFILENAME ofn;
   char filterarray[] = { "Log files (*.LOG)\0" "*.LOG\0"
@@ -131,7 +151,7 @@ void MyClientWindow::CmOpenLogfile(void)
   
   memset(&ofn, 0, sizeof(ofn));
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetSafeWindow();
+  ofn.hwndOwner = hwnd;
   ofn.lpstrFilter = filterarray;
   ofn.lpstrFile = __currentlogfilename;
   ofn.nMaxFile = sizeof(__currentlogfilename);
@@ -140,30 +160,27 @@ void MyClientWindow::CmOpenLogfile(void)
   ofn.lpstrDefExt = "LOG";
   
   if (GetOpenFileName(&ofn))
-  {
-    graphwin.LogRereadNeeded();
-  }
+    graphwin.LogRereadNeeded(hwnd);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-void MyClientWindow::CmAbout(void)
+void Main_CmAbout(HWND hwnd)
 {
   const char *buffer =
-      "Distributed Computing Log Visualizer, " PROG_VERSION_STR "\n"
+      PROG_DESC_LONG ", " PROG_VERSION_STR "\n"
       "Distributed Computing Technologies, Inc.\n"
       "http://www.distributed.net/\n\n"
-      "Programmed in VWCL by Jeff Lawson (BovineOne)\n"
-      "<bovine@distributed.net> http://www.bovine.net/\n\n"
-      "\nPlease send questions about the client to <help@distributed.net>";
+      "Programmed by Jeff \"Bovine\" Lawson <bovine@distributed.net>\n\n"
+      "\nPlease send questions about this program to <help@distributed.net>";
 
   #if (CLIENT_OS == OS_WIN32) || (CLIENT_OS == OS_WIN32S)
     MSGBOXPARAMS msgbox;
     msgbox.cbSize = sizeof(MSGBOXPARAMS);
-    msgbox.hwndOwner = GetSafeWindow();
-    msgbox.hInstance = VGetApp()->GetInstanceHandle();
+    msgbox.hwndOwner = hwnd;
+    msgbox.hInstance = (HINSTANCE) GetWindowLong(hwnd, GWL_HINSTANCE);
     msgbox.lpszText = buffer;
     msgbox.lpszCaption = "About this Program";
     msgbox.dwStyle = MB_USERICON | MB_OK;

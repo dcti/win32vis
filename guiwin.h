@@ -26,57 +26,146 @@
 #include "cputypes.h"
 #include "version.h"
 
-// vwcl headers
-#define _USTR_H
-#define _U(str) str
-#include "vStandard.h"
-#include "v3DRect.hpp"
-#if (CLIENT_OS == OS_WIN32)
-  #include "vStatusBarCtrl.hpp"       // must be included before vMainWindow
-#endif
-#include "vMainWindow.hpp"
-#include "vEdit.hpp"
-#include "vCheckBox.hpp"
-#include "vComboBox.hpp"
-#include "vPaintDC.hpp"
 
+// Windows headers.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <commctrl.h>
+#include <commdlg.h>
+
+// C Library functions
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
 
 // gui encapsulation headers
 #include "resource.h"
-#include "guigraph.h"
+#include "guidlist.h"
 
 
-// retrieve the logfile that should be displayed.
-const char *LogGetCurrentLogFilename(void);
+// function prototypes.
+extern const char *LogGetCurrentLogFilename(void);
+extern LRESULT CALLBACK Main_WindowProc(HWND,UINT,WPARAM,LPARAM);
+extern void Main_CmOpenLogfile(HWND hwnd);
+extern void Main_CmAbout(HWND hwnd);
 
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-class MyClientWindow : public VMainWindow
+// Data Record unit entry, used to store each of the keyrate data samples
+// that have been read in and parsed from the log file.
+
+struct MyGraphEntry
 {
-protected:
-  MyGraphWindow graphwin;
+  time_t timestamp;
+  double rate;
+  double duration;
+  double keycount;
 
-  // event handlers
-  virtual BOOL PreCreateWindow(LPCREATESTRUCT cs);
-  virtual BOOL PostCreateWindow(void);
-  virtual void RecalcLayout(LPRECT lpRect);
-  virtual int OnCommand(WORD wNotifyCode, WORD wID, HWND hWndControl);
-	virtual LRESULT	WindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
-  void OnInitMenu(HMENU hMenu);
-  void CmAbout(void);
-  void CmOpenLogfile(void);
-
-public:
-  MyClientWindow(void) : VMainWindow() {};
-  
+  friend bool operator==( const MyGraphEntry &a, const MyGraphEntry &b)
+    { return (a.timestamp == b.timestamp) && (a.rate == b.rate) &&
+        (a.duration == b.duration) && (a.keycount == b.keycount); }
 };
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#endif  // GUI32_H
+#if 0
+// Class definition for the time range configuration dialog that is
+// activated from the popup context menu within the graph viewer.
+
+class MyGraphConfig : private VDialog
+{
+protected:
+  // data storage.
+  VSliderRange rangeslider;
+  VComboBox combostart, comboend;
+  time_t userstart, userend;
+
+  // internal function to update displayable text to the specified date.
+  void SetDlgItemGMT(int nID, time_t timestamp);
+
+  // event handlers
+  virtual int OnCommand(WORD wNotifyCode, WORD wID, HWND hWndControl);
+  virtual int OnInitDialog(HWND hWndFocus, LPARAM lParam);
+  virtual BOOL OnOK();
+
+public:
+  // class constructor.
+  MyGraphConfig() : starttime(0), endtime(0), datastart(0), dataend(0),
+    userstart(0), userend(0) {};
+
+  // public method to invoke blocking dialog execution.
+  virtual int DoModal(HWND parent);
+
+  // Data storage for currently selected date ranges.
+  // Modify these values before calling DoModal(), and read
+  // from them after regaining control.
+  time_t starttime, endtime;
+  time_t datastart, dataend;
+};
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+// Class definition for the main graphing window itself.  This window
+// repaints itself with the graph data and handles log parsing by itself.
+
+class MyGraphWindow
+{
+protected:
+  enum LoggerState { nologloaded, lognotfound, loadinprogress, logloaded };
+
+  // storage variables.
+  TDoubleListImp<MyGraphEntry> logdata;
+  time_t mintime, maxtime;
+  double minrate, maxrate;
+  double totalkeys;
+  time_t rangestart, rangeend;
+  HANDLE hLogThread;
+
+  // current graphing state.
+  LoggerState loggerstate;
+
+  // log parsing
+  static time_t ParseTimestamp(char *stamp);
+  static double ParseDuration(char *stamp);
+  void ReadLogData(void);
+  static long LogParseThread(long lParam);
+
+  // log painting
+  static void IterDrawFuncRate(MyGraphEntry &datapoint, void *vptr);
+
+public:
+  // constructor and destructor.
+  MyGraphWindow(void);
+  ~MyGraphWindow(void);
+
+  // window repainting.
+  int DoRedraw(HDC dc, RECT clientrect);
+
+  // public interface methods.
+  void LogRereadNeeded(HWND hwnd);
+
+  // public interface methods.
+  void GetRange(time_t &start, time_t &end)
+    { start = rangestart; end = rangeend; }
+  
+  // public interface methods.
+  void SetRange(time_t start, time_t end)
+    { rangestart = start; rangeend = end; }
+};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+#endif  // __GUIWIN_H__
 

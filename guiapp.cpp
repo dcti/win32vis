@@ -5,60 +5,60 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.1 1999/09/07 18:46:09 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.2 1999/09/09 09:02:09 jlawson Exp $";
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-#if (CLIENT_OS == OS_WIN16) || (CLIENT_OS == OS_WIN32S)
-static bool ewpifound = false;
-
-BOOL CALLBACK ewpi(HWND hwnd, LPARAM)
-{
-  char title[100];
-  ::GetWindowText(hwnd, title, sizeof(title));
-  if (strncmpi(title, PROG_DESC_LONG, sizeof(PROG_DESC_LONG)) == 0)
-    ewpifound = true;
-  return !ewpifound;
-}
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma argsused
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-  LPSTR lpszCmdLine, int nCmdShow)
+int WINAPI WinMain(
+    HINSTANCE hInstance,          // handle of current instance
+    HINSTANCE hPrevInstance,      // handle of previous instance
+    LPSTR lpszCmdLine,            // pointer to command line
+    int nCmdShow                  // show state of window
+   )
 {
-#if (CLIENT_OS == OS_WIN16) || (CLIENT_OS == OS_WIN32S)
-  // verify that ntohl/ntohl work properly (mozock.dll doesn't)
-  if (ntohl(1) == 0 || htonl(1) == 0)
-  {
-    MessageBox(NULL, "Your Winsock implementation is unusable with this program.",
-      NULL, MB_ICONHAND | MB_OK);
-    return 0;
-  }
-#endif
-  
-  {
-    // Initialize the Virtual Windows Class Library
-    if ( VGetApp()->Initialize(hInstance, nCmdShow, IDM_MENU1, IDI_ICON_MAIN) )
-    {
-      // Complete app initialization
-      VGetApp()->AppTitle(PROG_DESC_LONG);
+  WNDCLASSEX wcex;
 
-      // Create and show main dialog window
-#if (CLIENT_OS == OS_WIN32)
-      // on full win32, we want a status bar at the bottom of our window
-      MyClientWindow().Create(PROG_DESC_LONG, WS_OVERLAPPEDWINDOW, NULL, true);
-#else
-      MyClientWindow().Create(PROG_DESC_LONG);
-#endif
-    }
+  // initialize the common controls.
+  InitCommonControls();
+
+  // Register the window class.
+  memset(&wcex, 0, sizeof(wcex));
+  wcex.cbSize = sizeof(wcex);
+  wcex.lpfnWndProc = (WNDPROC) Main_WindowProc;
+  wcex.hInstance = hInstance;
+  wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON_MAIN));
+  wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wcex.hbrBackground = (HBRUSH) GetStockObject(LTGRAY_BRUSH);
+  wcex.lpszMenuName = MAKEINTRESOURCE(IDM_MENU1);
+  wcex.hIconSm = (HICON) LoadImage(hInstance,
+      MAKEINTRESOURCE(IDI_ICON_MAIN), IMAGE_ICON, 0, 0, LR_SHARED);
+  wcex.lpszClassName = "DnetLogVis";
+  if (!RegisterClassEx(&wcex))
+  {
+    MessageBox(NULL, "Failed to register window class.", NULL, MB_OK | MB_ICONERROR);
+    return 1;
   }
+
+  // Create an instance of the window.
+  if (!CreateWindowEx(0, wcex.lpszClassName, PROG_DESC_LONG,
+      WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_THICKFRAME,
+      CW_USEDEFAULT, CW_USEDEFAULT, 620, 370,
+      NULL, NULL, hInstance, NULL))
+  {
+    MessageBox(NULL, "Window creation failed.", NULL, MB_OK | MB_ICONERROR);
+    return 1;
+  }
+
+  // Run the message loop.
+  MSG msg;
+  while (GetMessage(&msg, NULL, NULL, NULL) == TRUE)
+    DispatchMessage(&msg);
+
   return 0;
 }
 
