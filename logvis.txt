@@ -1,7 +1,7 @@
 
-  distributed.net's Logfile Visualizer documentation ver 1.2.2
+  distributed.net's Logfile Visualizer documentation version 1.3.0
  
-  Copyright distributed.net 1997-2002 - All Rights Reserved
+  Copyright distributed.net 1997-2004 - All Rights Reserved
   For use in distributed.net projects only.
   Any other distribution violates copyright.
 
@@ -19,7 +19,7 @@
 
  2.0  Opening a log file ---------------------------------------------
 
-    For this program to work, your distributed.net Rc5des client needs
+    For this program to work, your distributed.net client needs
     to be setup to generate a log file.  Please refer to the documentation
     that came with your client to find out how to turn this configuration
     on.
