@@ -4,10 +4,9 @@ implement any of these changes (or others that you feel would be valuable)
 and send your changes to bovine@distributed.net so that they can be
 shared with all others.
 
-- make contests listed in "View" menu become disabled if no data for that
-contest was found in the logfile.
 
-- separate log data by contests, and color code and indicate contest names
+- allow simultaneously displaying multiple projects at the same time 
+  using colors and labels to indicate projects.
 
 - add "export" function to dump parsed dates and keyrates into a
 comma-separated text file that could be imported into Excel or some other
