@@ -12,6 +12,7 @@
 #define IDM_CONTEST_DES                 106
 #define IDM_CONTEST_CSC                 107
 #define IDM_CONTEST_OGR                 108
+#define IDM_SHOWIDLE                    120
 #define IDI_ICON_MAIN                   200
 #define IDM_MENU1                       215
 #define IDD_GRAPHCFG                    261

@@ -6,10 +6,11 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.11 2001/01/15 07:37:38 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.12 2001/01/15 08:25:07 jlawson Exp $";
 #endif
 
 
+bool bShowIdleDrops = true;
 MyGraphWindow graphwin;
 static char __currentlogfilename[200] = {0};
 
@@ -97,6 +98,11 @@ LRESULT CALLBACK Main_WindowProc(
       EnableMenuItem(hPopup, IDM_CONTEST_DES, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_CSC, MF_BYCOMMAND | dwEnabledWithLog);
       EnableMenuItem(hPopup, IDM_CONTEST_OGR, MF_BYCOMMAND | dwEnabledWithLog);
+      EnableMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND | dwEnabledWithLogAndData);
+
+      // Check or uncheck the drop menu item.
+      CheckMenuItem(hPopup, IDM_SHOWIDLE, MF_BYCOMMAND |
+                    (bShowIdleDrops ? MF_CHECKED : MF_UNCHECKED));
 
       // Set the radio button on whichever contest is currently selected.
       UINT radioselect = graphwin.GetViewedContestMenuId();
@@ -200,6 +206,13 @@ LRESULT CALLBACK Main_WindowProc(
             graphwin.LogRereadNeeded(hwnd);
           }
           return FALSE;
+        }
+        else if (wID == IDM_SHOWIDLE)
+        {
+          bShowIdleDrops = !bShowIdleDrops;
+
+          // force a redraw
+          InvalidateRect(hwnd, NULL, TRUE);
         }
 
       }

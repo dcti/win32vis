@@ -88,6 +88,8 @@ BEGIN
     BEGIN
         MENUITEM "&Zoom range...",              IDM_GRAPHCONFIG
         MENUITEM SEPARATOR
+        MENUITEM "Emphasize &Idle periods"      IDM_SHOWIDLE
+        MENUITEM SEPARATOR
         MENUITEM "&RC5 Project data",           IDM_CONTEST_RC5
         MENUITEM "&DES Project data",           IDM_CONTEST_DES
         MENUITEM "&CSC Project data",           IDM_CONTEST_CSC

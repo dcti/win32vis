@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guigraph.cpp,v 1.6 2001/01/15 07:37:38 jlawson Exp $";
+static char *id="@(#)$Id: guigraph.cpp,v 1.7 2001/01/15 08:25:05 jlawson Exp $";
 #endif
 
 
@@ -488,7 +488,7 @@ void MyPaintHelper::DrawToDataPoint(const MyGraphEntry &datapoint)
       MoveToEx(dc, point.x, point.y, NULL);
       firstpoint = false;
     }
-    else if ((datapoint.timestamp - lasttime) > 300 + 1.25 * datapoint.duration)
+    else if (bShowIdleDrops && (datapoint.timestamp - lasttime) > 300 + 1.25 * datapoint.duration)
     {
       // There was a significant lapse in time since the last point,
       // which probably indicates that the client was turned off for
