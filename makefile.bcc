@@ -40,6 +40,8 @@ GUI_OBJS =                    \
         $(OUTPUTPATH)/guiapp.obj     \
         $(OUTPUTPATH)/guigraph.obj   \
         $(OUTPUTPATH)/guiwind.obj    \
+		$(OUTPUTPATH)/sliderrange.obj	\
+		$(OUTPUTPATH)/guiconfig.obj
 
 GUI_RES = $(OUTPUTPATH)/guiwin.res
 

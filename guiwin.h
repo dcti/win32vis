@@ -43,6 +43,7 @@
 // gui encapsulation headers
 #include "resource.h"
 #include "guidlist.h"
+#include "sliderrange.h"
 
 
 // function prototypes.
@@ -70,46 +71,6 @@ struct MyGraphEntry
     { return (a.timestamp == b.timestamp) && (a.rate == b.rate) &&
         (a.duration == b.duration) && (a.keycount == b.keycount); }
 };
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-#if 0
-// Class definition for the time range configuration dialog that is
-// activated from the popup context menu within the graph viewer.
-
-class MyGraphConfig : private VDialog
-{
-protected:
-  // data storage.
-  VSliderRange rangeslider;
-  VComboBox combostart, comboend;
-  time_t userstart, userend;
-
-  // internal function to update displayable text to the specified date.
-  void SetDlgItemGMT(int nID, time_t timestamp);
-
-  // event handlers
-  virtual int OnCommand(WORD wNotifyCode, WORD wID, HWND hWndControl);
-  virtual int OnInitDialog(HWND hWndFocus, LPARAM lParam);
-  virtual BOOL OnOK();
-
-public:
-  // class constructor.
-  MyGraphConfig() : starttime(0), endtime(0), datastart(0), dataend(0),
-    userstart(0), userend(0) {};
-
-  // public method to invoke blocking dialog execution.
-  virtual int DoModal(HWND parent);
-
-  // Data storage for currently selected date ranges.
-  // Modify these values before calling DoModal(), and read
-  // from them after regaining control.
-  time_t starttime, endtime;
-  time_t datastart, dataend;
-};
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -155,12 +116,55 @@ public:
   void LogRereadNeeded(HWND hwnd);
 
   // public interface methods.
+  void GetDataRange(time_t &start, time_t &end)
+    { start = mintime; end = maxtime; }
+
+  // public interface methods.
   void GetRange(time_t &start, time_t &end)
     { start = rangestart; end = rangeend; }
   
   // public interface methods.
   void SetRange(time_t start, time_t end)
     { rangestart = start; rangeend = end; }
+
+  // public interface methods.
+  bool IsDataAvailable(void)
+    { return loggerstate == logloaded && !logdata.IsEmpty() &&
+          minrate != maxrate && mintime != maxtime; }
+};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+// Class definition for the time range configuration dialog that is
+// activated from the popup context menu within the graph viewer.
+
+class MyGraphConfig
+{
+protected:
+  // data storage.
+  time_t userstart, userend;
+
+  // event handlers
+  static BOOL CALLBACK DialogProc(HWND, UINT, WPARAM, LPARAM);
+  int OnCommand(HWND hwndDlg, WORD wNotifyCode, WORD wID, HWND hWndControl);
+  int OnInitDialog(HWND hwndDlg, HWND hWndFocus, LPARAM lParam);
+  BOOL OnOK(HWND hwndDlg);
+
+public:
+  // class constructor.
+  MyGraphConfig() : starttime(0), endtime(0), datastart(0), dataend(0),
+    userstart(0), userend(0) {};
+
+  // public method to invoke blocking dialog execution.
+  int DoModal(HWND parent);
+
+  // Data storage for currently selected date ranges.
+  // Modify these values before calling DoModal(), and read
+  // from them after regaining control.
+  time_t starttime, endtime;
+  time_t datastart, dataend;
 };
 
 /////////////////////////////////////////////////////////////////////////////

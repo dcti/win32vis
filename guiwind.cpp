@@ -6,7 +6,7 @@
 
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiwind.cpp,v 1.2 1999/09/09 09:02:10 jlawson Exp $";
+static char *id="@(#)$Id: guiwind.cpp,v 1.3 1999/09/10 09:36:00 jlawson Exp $";
 #endif
 
 
@@ -72,11 +72,17 @@ LRESULT CALLBACK Main_WindowProc(
       {      
         if ((savedcontext = SaveDC(m_ps.hdc)) != 0)
         {
+          // Compute the rectangle of the client paint area,
+          // not including the status bar and the window borders.
+          // This is probably not the best way to do it, but this
+          // is the easiest way I could manage it.
           GetClientRect(hwnd, &clientrect);
           GetClientRect(GetDlgItem(hwnd, IDC_STATUSBAR), &statusrect);
           clientrect.bottom -= (statusrect.bottom - statusrect.top);
           clientrect.left += GetSystemMetrics(SM_CXFRAME);
           clientrect.right -= GetSystemMetrics(SM_CXFRAME);
+
+          // actually perform the repaint operation.
           graphwin.DoRedraw(m_ps.hdc, clientrect);
         }
         RestoreDC(m_ps.hdc, savedcontext);
@@ -111,29 +117,23 @@ LRESULT CALLBACK Main_WindowProc(
       break;
     }
 
-#if 0
     case WM_RBUTTONDOWN:
     {
       // require that a logfile is already loaded.
-      if (loggerstate == logloaded && logdata.IsEmpty() &&
-          minrate != maxrate && mintime != maxtime)
+      if (graphwin.IsDataAvailable())
       {      
         // bring up the configuration dialog
         MyGraphConfig config;
-        config.datastart = mintime;
-        config.dataend = maxtime;
-        config.starttime = rangestart;
-        config.endtime = rangeend;
-        config.DoModal(GetSafeWindow());
-        rangestart = config.starttime;
-        rangeend = config.endtime;
+        graphwin.GetDataRange(config.datastart, config.dataend);
+        graphwin.GetRange(config.starttime, config.endtime);
+        config.DoModal(hwnd);
+        graphwin.SetRange(config.starttime, config.endtime);
 
         // force a redraw
-        Refresh();
+        InvalidateRect(hwnd, NULL, TRUE);
       }
       return FALSE;
     }
-#endif
 
   }
   return DefWindowProc(hwnd, uMsg, wParam, lParam);

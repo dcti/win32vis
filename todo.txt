@@ -1,0 +1,11 @@
+show log filename on screen
+
+indicate contest names
+
+open file dialog on startup.
+
+refresh menu item.
+
+config dialog to menu item.
+
+

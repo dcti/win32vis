@@ -5,7 +5,7 @@
 #include "guiwin.h"
 
 #if (!defined(lint) && defined(__showids__))
-static char *id="@(#)$Id: guiapp.cpp,v 1.2 1999/09/09 09:02:09 jlawson Exp $";
+static char *id="@(#)$Id: guiapp.cpp,v 1.3 1999/09/10 09:36:00 jlawson Exp $";
 #endif
 
 
@@ -25,6 +25,9 @@ int WINAPI WinMain(
 
   // initialize the common controls.
   InitCommonControls();
+  if (!RegisterSliderRangeClass())
+    MessageBox(NULL, "Slider Range class registration failed.", NULL, MB_OK);
+  
 
   // Register the window class.
   memset(&wcex, 0, sizeof(wcex));
@@ -36,7 +39,9 @@ int WINAPI WinMain(
   wcex.hbrBackground = (HBRUSH) GetStockObject(LTGRAY_BRUSH);
   wcex.lpszMenuName = MAKEINTRESOURCE(IDM_MENU1);
   wcex.hIconSm = (HICON) LoadImage(hInstance,
-      MAKEINTRESOURCE(IDI_ICON_MAIN), IMAGE_ICON, 0, 0, LR_SHARED);
+      MAKEINTRESOURCE(IDI_ICON_MAIN), IMAGE_ICON,
+      GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON),
+      LR_SHARED);     //LR_LOADREALSIZE
   wcex.lpszClassName = "DnetLogVis";
   if (!RegisterClassEx(&wcex))
   {

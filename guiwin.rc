@@ -50,8 +50,8 @@ STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION |
 CAPTION "Logfile Visualizer Controls"
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "&Slider Rect",IDC_SLIDERRANGE,10,9,222,20,NOT 
-                    WS_TABSTOP
+    CONTROL         "My Sliding Rectangle",IDC_SLIDERRANGE,"SlideControl",
+                    0x0,10,9,222,20
     LTEXT           "Starting &date:",-1,8,42,44,8,NOT WS_GROUP
     COMBOBOX        IDC_COMBOSTART,58,40,98,55,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
