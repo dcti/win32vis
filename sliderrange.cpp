@@ -16,7 +16,9 @@ struct SliderRangeStruc
 
 
 
-#define SRN_SENSITIVITY 3
+#define SRN_MAX_CLOSENESS 5
+#define SRN_SENSITIVITY_OUTER 3
+#define SRN_SENSITIVITY_INNER 8
 
 
 
@@ -191,13 +193,15 @@ static LRESULT CALLBACK SliderRangeWindowProc(
       if ((srs = (SliderRangeStruc *) GetWindowLong(hwnd, GWL_USERDATA)) != NULL)
       {
         int xPos = LOWORD(lParam);
-        srs->leftmoving = (xPos >= srs->leftside - SRN_SENSITIVITY &&
-                    xPos <= srs->leftside + SRN_SENSITIVITY);
-        srs->rightmoving = (xPos >= srs->rightside - SRN_SENSITIVITY &&
-                    xPos <= srs->rightside + SRN_SENSITIVITY);
+        srs->leftmoving = (xPos >= srs->leftside - SRN_SENSITIVITY_OUTER &&
+                    xPos <= srs->leftside + SRN_SENSITIVITY_INNER);
+        srs->rightmoving = (xPos >= srs->rightside - SRN_SENSITIVITY_INNER &&
+                    xPos <= srs->rightside + SRN_SENSITIVITY_OUTER);
         if (srs->leftmoving && srs->rightmoving)
         {
-          if (srs->leftside > 0) srs->rightmoving = false;
+          if (xPos >= srs->rightside) srs->leftmoving = false;
+          else if (xPos <= srs->leftside) srs->rightmoving = false;
+          else if (srs->leftside > 0) srs->rightmoving = false;
           else srs->leftmoving = false;
         }
         if (srs->leftmoving || srs->rightmoving) SetCapture(hwnd);
@@ -227,57 +231,56 @@ static LRESULT CALLBACK SliderRangeWindowProc(
         if (srs->leftmoving)
         {
           int newpos = xPos;
-          if (newpos > srs->rightside - SRN_SENSITIVITY)
-            newpos = srs->rightside - SRN_SENSITIVITY;
+          if (newpos > srs->rightside - SRN_MAX_CLOSENESS)
+            newpos = srs->rightside - SRN_MAX_CLOSENESS;
           if (newpos < 0) newpos = 0;
           if (srs->leftside != newpos)
           {
             srs->leftside = newpos;
             InvalidateRect(hwnd, NULL, FALSE);
             PostMessage(GetParent(hwnd), WM_COMMAND,
-              MAKELONG(GetWindowLong(hwnd, GWL_ID),
-              SRN_LEFTCHANGED),
-              srs->leftside);
-            }
-          }
-          else if (srs->rightmoving)
-          {
-            RECT clientrect;
-            GetClientRect(hwnd, &clientrect);
-            int newpos = xPos;
-            if (newpos < srs->leftside + SRN_SENSITIVITY)
-              newpos = srs->leftside + SRN_SENSITIVITY;
-            if (newpos > clientrect.right) newpos = clientrect.right;
-            if (srs->rightside != newpos)
-            {
-              srs->rightside = newpos;
-              InvalidateRect(hwnd, NULL, FALSE);
-              PostMessage(GetParent(hwnd), WM_COMMAND,
                 MAKELONG(GetWindowLong(hwnd, GWL_ID),
-                SRN_RIGHTCHANGED),
-                srs->rightside);
-            }
+                SRN_LEFTCHANGED), srs->leftside);
           }
-
-          // set the cursor shape to something special
-          if ((xPos >= srs->leftside - SRN_SENSITIVITY &&
-              xPos <= srs->leftside + SRN_SENSITIVITY) ||
-              (xPos >= srs->rightside - SRN_SENSITIVITY &&
-              xPos <= srs->rightside + SRN_SENSITIVITY))
-            SetCursor(srs->sizer);
-          else
-            SetCursor(srs->arrow);
         }
-        // we're done
-        return FALSE;
+        else if (srs->rightmoving)
+        {
+          RECT clientrect;
+          GetClientRect(hwnd, &clientrect);
+          int newpos = xPos;
+          if (newpos < srs->leftside + SRN_MAX_CLOSENESS)
+            newpos = srs->leftside + SRN_MAX_CLOSENESS;
+          if (newpos > clientrect.right) newpos = clientrect.right;
+          if (srs->rightside != newpos)
+          {
+            srs->rightside = newpos;
+            InvalidateRect(hwnd, NULL, FALSE);
+            PostMessage(GetParent(hwnd), WM_COMMAND,
+                MAKELONG(GetWindowLong(hwnd, GWL_ID),
+                SRN_RIGHTCHANGED), srs->rightside);
+          }
+        }
+
+        // set the cursor shape to something special
+        if ((xPos >= srs->leftside - SRN_SENSITIVITY_OUTER &&
+            xPos <= srs->leftside + SRN_SENSITIVITY_INNER) ||
+            (xPos >= srs->rightside - SRN_SENSITIVITY_INNER &&
+            xPos <= srs->rightside + SRN_SENSITIVITY_OUTER))
+          SetCursor(srs->sizer);
+        else
+          SetCursor(srs->arrow);
       }
-      case WM_LBUTTONDBLCLK:
-      case WM_MBUTTONDBLCLK:
-      case WM_MBUTTONDOWN:
-      case WM_MBUTTONUP:
-      case WM_RBUTTONDBLCLK:
-        // ignore all these suckers
-        return FALSE;
+      // we're done
+      return FALSE;
+    }
+
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONDBLCLK:
+      // ignore all these suckers
+      return FALSE;
   };
   return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
