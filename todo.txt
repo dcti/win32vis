@@ -10,4 +10,6 @@ config dialog to menu item.
 
 actually use the status bar instead of painting messages.
 
+add parsing of personal proxy log files.
+
 
